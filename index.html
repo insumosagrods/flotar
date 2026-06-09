@@ -1,0 +1,1801 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>FLOTAR</title>
+<meta name="theme-color" content="#0b0d12">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="FLOTAR">
+<link rel="manifest" href="manifest.json">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0b0d12;--bg2:#111318;--bg3:#181c25;--bg4:#1e2330;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);
+  --accent:#e8b84b;--accent2:#f5d070;--accent-dim:rgba(232,184,75,0.12);
+  --green:#2dd87a;--green-dim:rgba(45,216,122,0.1);--green-border:rgba(45,216,122,0.3);
+  --red:#f05a5a;--red-dim:rgba(240,90,90,0.1);
+  --orange:#f0903a;--orange-dim:rgba(240,144,58,0.1);
+  --text:#f0ede8;--text2:#b8b5ae;--text3:#7a7770;
+  --fd:'Bebas Neue',sans-serif;--fb:'DM Sans',sans-serif;--fm:'DM Mono',monospace;
+  --r:12px;--rs:8px;
+  --st:env(safe-area-inset-top,0px);--sb:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--fb);font-size:15px;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(232,184,75,0.015) 1px,transparent 1px),linear-gradient(90deg,rgba(232,184,75,0.015) 1px,transparent 1px);background-size:44px 44px;pointer-events:none;z-index:0;}
+
+/* LOAD */
+#LS{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity .4s;}
+.ls-logo{font-family:var(--fd);font-size:64px;letter-spacing:12px;color:var(--accent);}
+.ls-sub{font-size:9px;letter-spacing:5px;text-transform:uppercase;color:var(--text3);margin-top:4px;}
+.ls-bar{width:140px;height:2px;background:var(--bg3);border-radius:1px;margin-top:28px;overflow:hidden;}
+.ls-fill{height:100%;background:var(--accent);animation:lbar 1.6s ease forwards;}
+@keyframes lbar{0%{width:0}100%{width:100%}}
+
+/* PAGES */
+.page{display:none;flex-direction:column;min-height:100vh;position:relative;z-index:1;}
+.page.active{display:flex;}
+
+/* LOGIN */
+#PL{align-items:center;justify-content:center;padding:20px;padding-top:calc(20px + var(--st));}
+.lw{width:100%;max-width:400px;}
+.l-brand{font-family:var(--fd);font-size:52px;letter-spacing:10px;color:var(--accent);text-align:center;}
+.l-tag{font-size:11px;color:var(--text3);text-align:center;letter-spacing:3px;text-transform:uppercase;margin-bottom:28px;}
+.l-card{background:var(--bg2);border:1px solid var(--border2);border-radius:16px;padding:28px 24px;}
+.l-tabs{display:flex;background:var(--bg3);border-radius:8px;padding:3px;margin-bottom:22px;}
+.l-tab{flex:1;padding:10px;text-align:center;font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;cursor:pointer;color:var(--text3);border-radius:6px;border:none;background:transparent;font-family:var(--fb);transition:all .2s;}
+.l-tab.on{background:var(--accent);color:#000;}
+
+/* INPUTS */
+.fg{margin-bottom:14px;}
+.fl{display:block;font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:6px;}
+.fi,.fs{width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--rs);color:var(--text);font-family:var(--fb);font-size:15px;padding:13px 14px;outline:none;transition:border-color .15s;-webkit-appearance:none;appearance:none;}
+.fi:focus,.fs:focus{border-color:rgba(232,184,75,.5);}
+.fi::placeholder{color:var(--text3);}
+.fh{font-size:11px;color:var(--text3);margin-top:5px;line-height:1.5;}
+.fe{color:var(--red);font-size:13px;margin-top:10px;min-height:18px;}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+
+/* BUTTONS */
+.btn{display:block;width:100%;padding:16px;border:none;border-radius:var(--rs);font-family:var(--fb);font-size:14px;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all .15s;text-align:center;position:relative;overflow:hidden;}
+.btn-p{background:var(--accent);color:#000;}
+.btn-p:active{background:var(--accent2);}
+.btn-p:disabled{opacity:.5;cursor:not-allowed;}
+.btn-s{background:var(--bg3);color:var(--text2);border:1px solid var(--border2);}
+.btn-g{background:transparent;color:var(--text3);border:1px solid var(--border);}
+.btn-grn{background:var(--green-dim);color:var(--green);border:1px solid var(--green-border);}
+
+/* BIG OPTION BUTTONS */
+.big-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 16px;border:2px solid var(--border2);border-radius:var(--r);background:var(--bg2);cursor:pointer;transition:all .2s;width:100%;font-family:var(--fb);}
+.big-btn:active,.big-btn.on{border-color:var(--accent);background:var(--accent-dim);}
+.big-btn-icon{font-size:36px;margin-bottom:10px;}
+.big-btn-label{font-size:15px;font-weight:700;color:var(--text);letter-spacing:.5px;}
+.big-btn-sub{font-size:12px;color:var(--text3);margin-top:4px;text-align:center;}
+
+/* CHOICE GRID */
+.choice-grid{display:grid;gap:10px;}
+.choice-grid.cols2{grid-template-columns:1fr 1fr;}
+.choice-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:18px 10px;border:2px solid var(--border2);border-radius:var(--rs);background:var(--bg2);cursor:pointer;transition:all .15s;font-family:var(--fb);text-align:center;}
+.choice-btn:active,.choice-btn.on{border-color:var(--accent);background:var(--accent-dim);}
+.choice-btn-icon{font-size:28px;margin-bottom:8px;}
+.choice-btn-label{font-size:14px;font-weight:700;color:var(--text);}
+.choice-btn-sub{font-size:11px;color:var(--text3);margin-top:3px;}
+
+/* TANQUE VISUAL */
+.tank-wrap{display:flex;flex-direction:column;align-items:center;gap:12px;padding:8px 0;}
+.tank-svg{width:120px;}
+.tank-levels{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;width:100%;max-width:360px;}
+.tank-lvl{padding:12px 6px;border:2px solid var(--border2);border-radius:var(--rs);background:var(--bg2);cursor:pointer;text-align:center;transition:all .15s;font-family:var(--fb);}
+.tank-lvl:active,.tank-lvl.on{border-color:var(--accent);background:var(--accent-dim);}
+.tank-lvl-num{font-size:14px;font-weight:700;color:var(--text);}
+.tank-lvl-pct{font-size:10px;color:var(--text3);margin-top:2px;}
+
+/* WIZARD HEADER */
+.wz-header{padding:calc(14px + var(--st)) 18px 14px;display:flex;align-items:center;gap:12px;background:var(--bg);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;}
+.wz-back{background:var(--bg3);border:1px solid var(--border2);border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;color:var(--text2);flex-shrink:0;border:none;}
+.wz-title{font-size:14px;font-weight:700;color:var(--text);flex:1;}
+.wz-step{font-size:12px;color:var(--text3);}
+
+/* PROGRESS BAR */
+.prog-bar{height:3px;background:var(--bg3);}
+.prog-fill{height:100%;background:var(--accent);transition:width .3s ease;}
+
+/* WIZARD SCREEN */
+.wz-screen{display:none;flex-direction:column;padding:20px 16px;gap:16px;flex:1;}
+.wz-screen.active{display:flex;}
+
+/* SCREEN TITLE */
+.sc-title{font-family:var(--fd);font-size:28px;letter-spacing:3px;color:var(--text);}
+.sc-sub{font-size:13px;color:var(--text3);margin-top:2px;line-height:1.5;}
+
+/* CARD */
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;}
+.card-head{padding:13px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.card-title{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent);}
+.card-body{padding:16px;}
+
+/* RESULT */
+.res-big{text-align:center;padding:20px 0 12px;}
+.res-num{font-family:var(--fd);font-size:80px;line-height:1;color:var(--accent);}
+.res-unit{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--text3);margin-top:4px;}
+.res-badge{display:inline-block;padding:6px 16px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-top:12px;}
+.badge-ok{background:var(--green-dim);color:var(--green);border:1px solid var(--green-border);}
+.badge-info{background:rgba(255,255,255,.06);color:var(--text2);}
+
+/* DATO ROW */
+.dr{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);}
+.dr:last-child{border-bottom:none;}
+.dr-l{font-size:12px;color:var(--text3);}
+.dr-v{font-family:var(--fm);font-size:13px;color:var(--text);}
+
+/* RENTABILIDAD RESULT */
+.rent-res{border-radius:var(--rs);padding:20px;text-align:center;margin-top:4px;}
+.rent-res.verde{background:var(--green-dim);border:1px solid var(--green-border);}
+.rent-res.gris{background:var(--bg3);border:1px solid var(--border2);}
+.rent-pct{font-family:var(--fd);font-size:64px;line-height:1;}
+.rent-res.verde .rent-pct{color:var(--green);}
+.rent-res.gris .rent-pct{color:var(--text2);}
+.rent-msg{font-size:13px;margin-top:8px;line-height:1.5;}
+.rent-res.verde .rent-msg{color:rgba(45,216,122,.8);}
+.rent-res.gris .rent-msg{color:var(--text3);}
+
+/* BOTTOM NAV */
+.bnav{position:fixed;bottom:0;left:0;right:0;z-index:100;background:var(--bg2);border-top:1px solid var(--border2);padding-bottom:var(--sb);display:none;}
+.bnav.show{display:block;}
+.bnav-inner{display:flex;}
+.nb{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 4px;border:none;background:transparent;cursor:pointer;color:var(--text3);font-family:var(--fb);font-size:10px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;transition:color .15s;gap:4px;}
+.nb.on{color:var(--accent);}
+.nb-icon{font-size:20px;line-height:1;}
+
+/* APP PAGES */
+#PA{padding-bottom:calc(72px + var(--sb));}
+.app-header{padding:calc(14px + var(--st)) 18px 14px;display:flex;align-items:center;justify-content:space-between;background:var(--bg);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;}
+.app-logo{font-family:var(--fd);font-size:28px;letter-spacing:6px;color:var(--accent);}
+.umenu-wrap{position:relative;}
+.umenu-btn{background:var(--bg3);border:1px solid var(--border2);border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer;color:var(--text2);}
+.umenu{position:absolute;top:44px;right:0;background:var(--bg2);border:1px solid var(--border2);border-radius:var(--rs);min-width:180px;display:none;z-index:200;overflow:hidden;}
+.umenu.open{display:block;}
+.umi{padding:12px 16px;font-size:13px;color:var(--text2);cursor:pointer;border-bottom:1px solid var(--border);}
+.umi:last-child{border-bottom:none;}
+.umi:active{background:var(--bg3);}
+.uname{font-size:13px;color:var(--text2);font-weight:500;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+
+/* SCREENS */
+.screen{display:none;padding:18px 16px;flex-direction:column;gap:14px;}
+.screen.active{display:flex;}
+
+/* PASS */
+.pw{position:relative;}
+.pt{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text3);font-size:16px;padding:4px;}
+.pr{font-size:12px;color:var(--text3);margin-top:3px;}
+.pr.ok{color:var(--green);}
+
+/* TOAST */
+.toast{position:fixed;bottom:calc(82px + var(--sb));left:50%;transform:translateX(-50%) translateY(20px);background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:10px 18px;font-size:13px;color:var(--text);opacity:0;transition:all .25s;z-index:9999;pointer-events:none;max-width:90vw;text-align:center;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.toast.ok{border-color:var(--green-border);color:var(--green);}
+.toast.err{border-color:rgba(240,90,90,.4);color:var(--red);}
+
+/* TRAMOS */
+.tramo-item{background:var(--bg3);border:1px solid var(--border2);border-radius:var(--rs);padding:12px 14px;display:flex;align-items:center;justify-content:space-between;}
+.tramo-num{font-size:11px;color:var(--text3);font-weight:600;letter-spacing:1px;text-transform:uppercase;margin-bottom:3px;}
+.tramo-ruta{font-size:14px;font-weight:600;color:var(--text);}
+.tramo-meta{font-size:11px;color:var(--text3);margin-top:2px;}
+.tramo-del{background:none;border:none;cursor:pointer;color:var(--red);font-size:20px;padding:4px;}
+
+/* SWITCH */
+.sw-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;}
+.sw-lbl{font-size:13px;color:var(--text2);}
+.sw{position:relative;width:44px;height:24px;flex-shrink:0;}
+.sw input{opacity:0;width:0;height:0;}
+.sw-sl{position:absolute;inset:0;background:var(--bg4);border-radius:12px;cursor:pointer;transition:.2s;border:1px solid var(--border2);}
+.sw input:checked+.sw-sl{background:rgba(232,184,75,.3);border-color:var(--accent);}
+.sw-sl::before{content:'';position:absolute;width:18px;height:18px;bottom:2px;left:2px;background:var(--text3);border-radius:50%;transition:.2s;}
+.sw input:checked+.sw-sl::before{transform:translateX(20px);background:var(--accent);}
+
+/* HISTORIAL */
+.hi{padding:12px 0;border-bottom:1px solid var(--border);}
+.hi:last-child{border-bottom:none;}
+.hi-ruta{font-size:13px;font-weight:600;color:var(--text);}
+.hi-meta{font-size:11px;color:var(--text3);margin-top:3px;}
+.hi-res{font-family:var(--fm);font-size:13px;margin-top:4px;}
+.hi-ok{color:var(--green);}
+.hi-no{color:var(--text3);}
+
+/* EMPTY */
+.empty{text-align:center;padding:32px 16px;color:var(--text3);font-size:13px;}
+.empty-icon{font-size:32px;margin-bottom:10px;}
+
+/* INFO BOX */
+.info-box{background:var(--accent-dim);border:1px solid rgba(232,184,75,.15);border-radius:var(--rs);padding:12px 14px;font-size:12px;color:var(--text2);line-height:1.6;}
+
+/* DIVIDER */
+.div{height:1px;background:var(--border);margin:4px 0;}
+
+/* OVERLAY */
+#OV{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:150;}
+#OV.show{display:block;}
+
+/* PIN */
+.pin-wrap{display:flex;gap:10px;justify-content:center;}
+.pin-inp{width:56px;height:64px;text-align:center;font-size:24px;font-family:var(--fm);background:var(--bg3);border:2px solid var(--border2);border-radius:var(--rs);color:var(--text);outline:none;-webkit-appearance:none;}
+.pin-inp:focus{border-color:var(--accent);}
+
+/* RESUMEN HIST */
+.sum-box{background:var(--bg3);border:1px solid var(--border);border-radius:var(--rs);padding:14px 16px;}
+.sum-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);}
+.sum-row:last-child{border-bottom:none;}
+.sum-l{font-size:12px;color:var(--text3);}
+.sum-v{font-family:var(--fm);font-size:14px;font-weight:500;color:var(--text);}
+.sum-v.ok{color:var(--green);}
+
+/* MAPS HINT */
+.maps-hint{font-size:12px;color:var(--text3);margin-top:5px;}
+.maps-hint.ok{color:var(--green);}
+
+/* VERIFY BOX */
+.vbox{background:var(--accent-dim);border:1px solid rgba(232,184,75,.2);border-radius:var(--rs);padding:12px 16px;font-family:var(--fm);font-size:13px;color:var(--accent);text-align:center;word-break:break-all;margin-bottom:16px;}
+
+/* AUTH LINK */
+.al{text-align:center;font-size:13px;color:var(--text3);margin-top:12px;}
+.al a{color:var(--accent);cursor:pointer;font-weight:600;}
+
+/* PLAN BADGE */
+.pb{display:inline-block;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;background:var(--accent-dim);color:var(--accent);border:1px solid rgba(232,184,75,.2);}
+
+/* VENC ALERT */
+.venc-alert{background:rgba(240,144,58,.08);border:1px solid rgba(240,144,58,.25);border-radius:var(--rs);padding:10px 14px;font-size:12px;color:var(--orange);margin-top:8px;}
+</style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div id="LS">
+  <div class="ls-logo">FLOTAR</div>
+  <div class="ls-sub">Calculadora de Flota</div>
+  <div class="ls-bar"><div class="ls-fill"></div></div>
+</div>
+
+<!-- ===== LOGIN ===== -->
+<div class="page" id="PL">
+  <div class="lw">
+    <div style="text-align:center;margin-bottom:28px;padding-top:20px">
+      <div class="l-brand">FLOTAR</div>
+      <div class="l-tag">Calculadora de Flota</div>
+    </div>
+    <div class="l-card">
+      <div class="l-tabs">
+        <button class="l-tab on" onclick="showPanel('pLogin',this)">Ingresar</button>
+        <button class="l-tab" onclick="showPanel('pReg',this)">Registrarse</button>
+      </div>
+
+      <!-- LOGIN -->
+      <div id="pLogin">
+        <div class="fg"><label class="fl">Email</label><input type="email" class="fi" id="li-email" placeholder="tu@email.com" autocomplete="email"></div>
+        <div class="fg">
+          <label class="fl">Contraseña</label>
+          <div class="pw"><input type="password" class="fi" id="li-pass" placeholder="Tu contraseña" autocomplete="current-password" style="padding-right:44px" onkeydown="if(event.key==='Enter')doLogin()"><button class="pt" onclick="togglePass('li-pass',this)">👁</button></div>
+        </div>
+        <div class="fe" id="li-err"></div>
+        <button class="btn btn-p" id="btn-li" onclick="doLogin()" style="margin-top:8px">ENTRAR</button>
+        <div class="al"><a onclick="showPanel('pForgot')">Olvidé mi contraseña</a></div>
+        <div class="al" style="margin-top:6px"><a onclick="showPanel('pChofer')">Soy chofer →</a></div>
+      </div>
+
+      <!-- REGISTER -->
+      <div id="pReg" style="display:none">
+        <div class="fr">
+          <div class="fg"><label class="fl">Nombre</label><input type="text" class="fi" id="re-nom" placeholder="Juan" autocomplete="given-name"></div>
+          <div class="fg"><label class="fl">Apellido</label><input type="text" class="fi" id="re-ape" placeholder="Pérez" autocomplete="family-name"></div>
+        </div>
+        <div class="fg"><label class="fl">Empresa</label><input type="text" class="fi" id="re-emp" placeholder="Transporte San Martín"></div>
+        <div class="fg"><label class="fl">Email</label><input type="email" class="fi" id="re-email" placeholder="tu@email.com" autocomplete="email"></div>
+        <div class="fg">
+          <label class="fl">Contraseña</label>
+          <div class="pw"><input type="password" class="fi" id="re-pass" placeholder="Mínimo 6 caracteres" style="padding-right:44px" oninput="checkPassUI()"><button class="pt" onclick="togglePass('re-pass',this)">👁</button></div>
+          <div style="margin-top:6px">
+            <div class="pr" id="r-len">○ &nbsp;Mínimo 6 caracteres</div>
+            <div class="pr" id="r-up" style="margin-top:2px">○ &nbsp;Una mayúscula</div>
+            <div class="pr" id="r-num" style="margin-top:2px">○ &nbsp;Un número o símbolo</div>
+          </div>
+        </div>
+        <div class="fg"><label class="fl">Repetir contraseña</label><input type="password" class="fi" id="re-pass2" placeholder="Repetir contraseña"></div>
+        <div class="fe" id="re-err"></div>
+        <button class="btn btn-p" id="btn-re" onclick="doRegister()">CREAR CUENTA GRATIS</button>
+        <div style="margin-top:10px;font-size:11px;color:var(--text3);text-align:center;line-height:1.5">14 días gratis · Sin tarjeta de crédito</div>
+      </div>
+
+      <!-- FORGOT -->
+      <div id="pForgot" style="display:none">
+        <div style="font-size:13px;color:var(--text2);margin-bottom:14px">Ingresá tu email y te mandamos el link.</div>
+        <div class="fg"><label class="fl">Email</label><input type="email" class="fi" id="fo-email" placeholder="tu@email.com"></div>
+        <div class="fe" id="fo-err"></div>
+        <div id="fo-ok" style="display:none;color:var(--green);font-size:13px;margin-bottom:10px">✓ Revisá tu bandeja de entrada.</div>
+        <button class="btn btn-p" id="btn-fo" onclick="doForgot()">ENVIAR LINK</button>
+        <div class="al"><a onclick="showPanel('pLogin')">← Volver</a></div>
+      </div>
+
+      <!-- VERIFY -->
+      <div id="pVerify" style="display:none">
+        <div style="font-size:32px;text-align:center;margin-bottom:12px">📧</div>
+        <div style="font-size:14px;font-weight:600;text-align:center;margin-bottom:8px">Verificá tu email</div>
+        <div class="vbox" id="v-email"></div>
+        <div style="font-size:13px;color:var(--text2);text-align:center;margin-bottom:16px;line-height:1.6">Te mandamos un link de confirmación. Hacé click y volvé acá.</div>
+        <div class="fe" id="v-err"></div>
+        <button class="btn btn-p" id="btn-v" onclick="checkVerified()">YA CONFIRMÉ</button>
+        <div class="al"><a onclick="resendVer()">Reenviar email</a></div>
+      </div>
+
+      <!-- CHOFER -->
+      <div id="pChofer" style="display:none">
+        <div style="font-size:13px;color:var(--text2);margin-bottom:6px;text-align:center">Últimos 4 dígitos de tu DNI</div>
+        <div style="font-size:11px;color:var(--text3);margin-bottom:18px;text-align:center">Tu empresa ya tiene que estar registrada en FLOTAR</div>
+        <div class="pin-wrap">
+          <input type="number" class="pin-inp" id="p0" maxlength="1" oninput="pinM(0)" onkeydown="pinK(event,0)">
+          <input type="number" class="pin-inp" id="p1" maxlength="1" oninput="pinM(1)" onkeydown="pinK(event,1)">
+          <input type="number" class="pin-inp" id="p2" maxlength="1" oninput="pinM(2)" onkeydown="pinK(event,2)">
+          <input type="number" class="pin-inp" id="p3" maxlength="1" oninput="doChofer()" onkeydown="pinK(event,3)">
+        </div>
+        <div class="fe" id="p-err" style="text-align:center;margin-top:10px"></div>
+        <button class="btn btn-p" onclick="doChofer()" style="margin-top:14px">ENTRAR</button>
+        <div class="al"><a onclick="showPanel('pLogin')">← Soy administrador</a></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== ONBOARDING WIZARD ===== -->
+<div class="page" id="POB">
+  <div class="wz-header">
+    <button class="wz-back" onclick="obBack()">←</button>
+    <div class="wz-title" id="ob-title">Configuración inicial</div>
+    <div class="wz-step" id="ob-step">1 / 5</div>
+  </div>
+  <div class="prog-bar"><div class="prog-fill" id="ob-prog" style="width:20%"></div></div>
+
+  <!-- OB1: Choferes -->
+  <div class="wz-screen active" id="ob1" style="padding-bottom:100px">
+    <div><div class="sc-title">CHOFERES</div><div class="sc-sub">Cargá los choferes de tu empresa. Pueden entrar a la app con los últimos 4 dígitos de su DNI.</div></div>
+    <div id="ob-choferes-list"></div>
+    <div class="card" id="ob-ch-form" style="display:none">
+      <div class="card-head"><div class="card-title">Nuevo chofer</div></div>
+      <div class="card-body">
+        <div class="fg"><label class="fl">Nombre completo *</label><input type="text" class="fi" id="ch-nom" placeholder="Juan Pérez" oninput="this.value=this.value.toUpperCase()"></div>
+        <div class="fg"><label class="fl">DNI completo *</label><input type="number" class="fi" id="ch-dni" placeholder="12345678"><div class="fh">Los últimos 4 dígitos son el PIN de acceso a la app</div></div>
+        <div class="fg"><label class="fl">Vto. licencia <span style="color:var(--text3);font-weight:400">opcional</span></label><input type="date" class="fi" id="ch-vlic" style="color-scheme:dark"></div>
+        <div class="fg"><label class="fl">Vto. psicofísico <span style="color:var(--text3);font-weight:400">opcional</span></label><input type="date" class="fi" id="ch-vpsi" style="color-scheme:dark"></div>
+        <div class="fe" id="ch-err"></div>
+        <div style="display:flex;gap:8px;margin-top:4px">
+          <button class="btn btn-p" onclick="saveChofer()" style="flex:2">GUARDAR</button>
+          <button class="btn btn-s" onclick="cancelChForm()" style="flex:1">Cancelar</button>
+        </div>
+      </div>
+    </div>
+    <button class="btn btn-g" id="btn-add-ch" onclick="showChForm()">+ Agregar chofer</button>
+    <div style="position:fixed;bottom:calc(20px + var(--sb));left:16px;right:16px;z-index:50">
+      <button class="btn btn-p" onclick="obNext(1)">CONTINUAR →</button>
+    </div>
+  </div>
+
+  <!-- OB2: Vehículos -->
+  <div class="wz-screen" id="ob2" style="padding-bottom:100px">
+    <div><div class="sc-title">CAMIONES</div><div class="sc-sub">Cargá tus camiones. Hasta 4 en este plan.</div></div>
+    <div id="ob-vehiculos-list"></div>
+    <div class="card" id="ob-v-form" style="display:none">
+      <div class="card-head"><div class="card-title" id="vf-title">Nuevo camión</div></div>
+      <div class="card-body">
+        <div class="fg"><label class="fl">Patente *</label><input type="text" class="fi" id="v-pat" placeholder="ABC 123" oninput="this.value=this.value.toUpperCase()"></div>
+        <div class="fr">
+          <div class="fg"><label class="fl">Marca</label><input type="text" class="fi" id="v-marca" placeholder="Scania"></div>
+          <div class="fg"><label class="fl">Modelo</label><input type="text" class="fi" id="v-mod" placeholder="R450"></div>
+        </div>
+        <div class="fg"><label class="fl">Tanque (litros) *</label><input type="number" class="fi" id="v-tnk" placeholder="600"></div>
+        <div style="font-size:10px;letter-spacing:2px;color:var(--accent);margin:14px 0 8px;font-weight:600;text-transform:uppercase">Rendimiento km/L *</div>
+        <div class="fr">
+          <div class="fg"><label class="fl">Vacío</label><input type="number" class="fi" id="v-r0" placeholder="3.5" step="0.1"></div>
+          <div class="fg"><label class="fl">Hasta 28T</label><input type="number" class="fi" id="v-r28" placeholder="3.0" step="0.1"></div>
+        </div>
+        <div class="fr">
+          <div class="fg"><label class="fl">Hasta 30T</label><input type="number" class="fi" id="v-r30" placeholder="2.8" step="0.1"></div>
+          <div class="fg"><label class="fl">35T</label><input type="number" class="fi" id="v-r35" placeholder="2.5" step="0.1"></div>
+        </div>
+        <div class="fg"><label class="fl">+35T</label><input type="number" class="fi" id="v-r36" placeholder="2.2" step="0.1" style="max-width:48%"></div>
+        <div class="fg"><label class="fl">Margen de seguridad (%)</label><input type="number" class="fi" id="v-mrg" value="10" min="0" max="30"><div class="fh">Litros extra de reserva. Recomendado: 10%</div></div>
+
+        <div style="font-size:10px;letter-spacing:2px;color:var(--accent);margin:14px 0 4px;font-weight:600;text-transform:uppercase">Costos fijos <span style="color:var(--text3);font-weight:400;text-transform:none;letter-spacing:0;font-size:11px">— opcional</span></div>
+        <div class="info-box" style="margin-bottom:12px">Los costos fijos se usan para calcular la rentabilidad real por viaje. Son valores estimativos — podés completarlos ahora o en Configuración. <span style="color:var(--accent);cursor:pointer" onclick="showCFInfo()">❓ ¿Qué son?</span></div>
+        <div class="fr">
+          <div class="fg"><label class="fl">Seguro ($/mes)</label><input type="number" class="fi" id="v-seg" placeholder="500000"></div>
+          <div class="fg"><label class="fl">Sueldo fijo ($/mes)</label><input type="number" class="fi" id="v-sue" placeholder="450000"></div>
+        </div>
+        <div class="fg"><label class="fl">Valor camión (USD)</label><input type="number" class="fi" id="v-usd" placeholder="180000"><div class="fh">Para calcular la amortización en pesos reales</div></div>
+        <div class="fr">
+          <div class="fg"><label class="fl">Precio cubierta ($)</label><input type="number" class="fi" id="v-cub" placeholder="280000"></div>
+          <div class="fg"><label class="fl">Vida útil cubierta (km)</label><input type="number" class="fi" id="v-cubkm" placeholder="120000"></div>
+        </div>
+        <div class="fg"><label class="fl">Km estimados / mes</label><input type="number" class="fi" id="v-kmm" placeholder="10000"></div>
+        <input type="hidden" id="v-edit-id">
+        <div class="fe" id="v-err"></div>
+        <div style="display:flex;gap:8px;margin-top:4px">
+          <button class="btn btn-p" onclick="saveVehiculo()" style="flex:2">GUARDAR</button>
+          <button class="btn btn-s" onclick="cancelVForm()" style="flex:1">Cancelar</button>
+        </div>
+      </div>
+    </div>
+    <button class="btn btn-g" id="btn-add-v" onclick="showVForm(null)">+ Agregar camión</button>
+    <div style="position:fixed;bottom:calc(20px + var(--sb));left:16px;right:16px;z-index:50">
+      <button class="btn btn-p" onclick="obNext(2)">CONTINUAR →</button>
+    </div>
+  </div>
+
+  <!-- OB3: Margen -->
+  <div class="wz-screen" id="ob3" style="padding-bottom:100px">
+    <div><div class="sc-title">RENTABILIDAD</div><div class="sc-sub">¿Qué porcentaje mínimo de ganancia considerás aceptable para un viaje?</div></div>
+    <div class="card">
+      <div class="card-head"><div class="card-title">Con chofer contratado</div></div>
+      <div class="card-body">
+        <div class="fg"><label class="fl">Margen mínimo esperado (%)</label><input type="number" class="fi" id="mg-ch" value="25" min="1" max="100"><div class="fh">El viaje lleva chofer — el costo del % del chofer está incluido en el cálculo</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head"><div class="card-title">Yo manejo</div></div>
+      <div class="card-body">
+        <div class="fg"><label class="fl">Margen mínimo esperado (%)</label><input type="number" class="fi" id="mg-yo" value="15" min="1" max="100"><div class="fh">No hay costo de chofer — podés aceptar viajes con menor margen</div></div>
+      </div>
+    </div>
+    <div class="info-box">El semáforo de rentabilidad se calibra según estos valores. Si el viaje llega al objetivo o lo supera, se muestra en verde con un mensaje positivo. Si no llega, se muestra el porcentaje sin alarmas.</div>
+    <div style="position:fixed;bottom:calc(20px + var(--sb));left:16px;right:16px;z-index:50">
+      <button class="btn btn-p" onclick="finishOnboarding()">LISTO — IR A FLOTAR →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== APP PRINCIPAL ===== -->
+<div class="page" id="PA">
+  <div class="app-header">
+    <div class="app-logo">FLOTAR</div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <div class="uname" id="uname"></div>
+      <div class="umenu-wrap">
+        <div class="umenu-btn" onclick="toggleUM()" id="umBtn">☰</div>
+        <div class="umenu" id="uMenu">
+          <div class="umi" onclick="goScreen('cfg')">⚙ Configuración</div>
+          <div class="umi" onclick="doLogout()" style="color:var(--red)">↪ Salir</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HOME -->
+  <div class="screen active" id="screen-home">
+    <div style="padding-top:8px"><div class="sc-title">¿QUÉ HACEMOS?</div></div>
+    <button class="big-btn" onclick="startMC()">
+      <div class="big-btn-icon">⛽</div>
+      <div class="big-btn-label">CALCULAR LITROS</div>
+      <div class="big-btn-sub">¿Cuánto combustible cargar para este viaje?</div>
+    </button>
+    <button class="big-btn" onclick="startMR(null)">
+      <div class="big-btn-icon">📊</div>
+      <div class="big-btn-label">RENTABILIDAD</div>
+      <div class="big-btn-sub">¿Conviene este viaje?</div>
+    </button>
+    <div id="venc-alerts"></div>
+  </div>
+
+  <!-- HISTORIAL -->
+  <div class="screen" id="screen-hist">
+    <div><div class="sc-title">HISTORIAL</div></div>
+    <div style="display:flex;background:var(--bg3);border-radius:8px;padding:3px;">
+      <button class="l-tab on" id="ht-v" onclick="switchHTab('v',this)" style="flex:1">Viajes</button>
+      <button class="l-tab" id="ht-r" onclick="switchHTab('r',this)" style="flex:1">Rentabilidad</button>
+    </div>
+    <!-- Filtro período -->
+    <div style="display:flex;gap:6px">
+      <button class="btn btn-g" id="hf-mes" onclick="setHFilter('mes',this)" style="flex:1;padding:8px;font-size:11px">Este mes</button>
+      <button class="btn btn-p" id="hf-todo" onclick="setHFilter('todo',this)" style="flex:1;padding:8px;font-size:11px">Todo</button>
+    </div>
+    <div id="h-viajes">
+      <div class="card"><div class="card-body" id="hv-list"><div class="empty"><div class="empty-icon">🗺️</div>Sin viajes guardados</div></div></div>
+    </div>
+    <div id="h-rent" style="display:none">
+      <!-- Resumen -->
+      <div id="h-rent-sum"></div>
+      <div class="card"><div class="card-body" id="hr-list"><div class="empty"><div class="empty-icon">📊</div>Sin cálculos guardados</div></div></div>
+    </div>
+  </div>
+
+  <!-- CONFIG -->
+  <div class="screen" id="screen-cfg">
+    <div><div class="sc-title">CONFIG</div></div>
+
+    <!-- Choferes -->
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">Choferes</div>
+        <button class="btn btn-g" style="padding:6px 12px;font-size:11px;width:auto" onclick="showChForm()">+ Agregar</button>
+      </div>
+      <div class="card-body">
+        <div id="cfg-ch-list"></div>
+        <div class="card" id="cfg-ch-form" style="display:none;margin-top:12px">
+          <div class="card-body">
+            <div class="fg"><label class="fl">Nombre completo *</label><input type="text" class="fi" id="cfg-ch-nom" oninput="this.value=this.value.toUpperCase()"></div>
+            <div class="fg"><label class="fl">DNI completo *</label><input type="number" class="fi" id="cfg-ch-dni"></div>
+            <div class="fr">
+              <div class="fg"><label class="fl">Vto. licencia</label><input type="date" class="fi" id="cfg-ch-vlic" style="color-scheme:dark"></div>
+              <div class="fg"><label class="fl">Vto. psicofísico</label><input type="date" class="fi" id="cfg-ch-vpsi" style="color-scheme:dark"></div>
+            </div>
+            <input type="hidden" id="cfg-ch-eid">
+            <div class="fe" id="cfg-ch-err"></div>
+            <div style="display:flex;gap:8px;margin-top:4px">
+              <button class="btn btn-p" onclick="saveCfgChofer()" style="flex:2">GUARDAR</button>
+              <button class="btn btn-s" onclick="cancelCfgCh()" style="flex:1">Cancelar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Vehículos -->
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">Camiones</div>
+        <button class="btn btn-g" style="padding:6px 12px;font-size:11px;width:auto" id="btn-add-v-cfg" onclick="showVForm(null)">+ Agregar</button>
+      </div>
+      <div class="card-body">
+        <div id="cfg-v-list"></div>
+      </div>
+    </div>
+
+    <!-- Margen -->
+    <div class="card">
+      <div class="card-head"><div class="card-title">Margen esperado</div></div>
+      <div class="card-body">
+        <div class="fr">
+          <div class="fg"><label class="fl">Con chofer (%)</label><input type="number" class="fi" id="cfg-mg-ch" min="1" max="100"></div>
+          <div class="fg"><label class="fl">Yo manejo (%)</label><input type="number" class="fi" id="cfg-mg-yo" min="1" max="100"></div>
+        </div>
+        <button class="btn btn-p" onclick="saveMargenes()" style="margin-top:4px">GUARDAR</button>
+      </div>
+    </div>
+
+    <!-- Cuenta -->
+    <div class="card">
+      <div class="card-head"><div class="card-title">Cuenta</div></div>
+      <div class="card-body">
+        <div class="dr"><span class="dr-l">Email</span><span class="dr-v" id="cfg-email" style="font-size:11px">—</span></div>
+        <div class="dr"><span class="dr-l">Empresa</span><span class="dr-v" id="cfg-emp">—</span></div>
+        <div class="dr"><span class="dr-l">Plan</span><span><span class="pb">GRATIS</span></span></div>
+        <button class="btn btn-s" onclick="doLogout()" style="margin-top:14px">Cerrar sesión</button>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end PA -->
+
+<!-- ===== MC WIZARD ===== -->
+<div class="page" id="PMC">
+  <div class="wz-header">
+    <button class="wz-back" onclick="mcBack()">←</button>
+    <div class="wz-title" id="mc-title">Calcular litros</div>
+    <div class="wz-step" id="mc-step"></div>
+  </div>
+  <div class="prog-bar"><div class="prog-fill" id="mc-prog"></div></div>
+
+  <!-- MC1: Camión -->
+  <div class="wz-screen active" id="mc1">
+    <div><div class="sc-title">CAMIÓN</div><div class="sc-sub">¿Con qué camión vas a hacer el viaje?</div></div>
+    <div class="choice-grid" id="mc-vehiculos"></div>
+  </div>
+
+  <!-- MC2: Tramos -->
+  <div class="wz-screen" id="mc2">
+    <div><div class="sc-title">RECORRIDO</div><div class="sc-sub">¿El viaje tiene un solo tramo o varios?</div></div>
+    <div class="choice-grid cols2">
+      <button class="choice-btn" onclick="selectTramos(1)">
+        <div class="choice-btn-icon">➡️</div>
+        <div class="choice-btn-label">Un tramo</div>
+        <div class="choice-btn-sub">Origen directo al destino</div>
+      </button>
+      <button class="choice-btn" onclick="selectTramos(2)">
+        <div class="choice-btn-icon">🔀</div>
+        <div class="choice-btn-label">Varios tramos</div>
+        <div class="choice-btn-sub">Con paradas o escalas</div>
+      </button>
+    </div>
+  </div>
+
+  <!-- MC3: Definir tramos -->
+  <div class="wz-screen" id="mc3">
+    <div><div class="sc-title">TRAMOS</div><div class="sc-sub">Ingresá los tramos del viaje. Cada tramo puede tener diferente carga.</div></div>
+    <div id="mc-tramos-list"></div>
+    <div class="card" id="mc-tramo-form">
+      <div class="card-head"><div class="card-title" id="mc-tf-title">Tramo 1</div></div>
+      <div class="card-body">
+        <div class="fg"><label class="fl">Origen *</label><input type="text" class="fi" id="tf-orig" placeholder="ej: Rosario" oninput="this.value=this.value.toUpperCase()"></div>
+        <div class="fg"><label class="fl">Destino *</label><input type="text" class="fi" id="tf-dest" placeholder="ej: Buenos Aires" oninput="this.value=this.value.toUpperCase()"></div>
+        <div class="fg">
+          <label class="fl">Toneladas a cargar</label>
+          <div class="choice-grid cols2" style="margin-top:6px" id="tf-tn-grid">
+            <button class="choice-btn on" data-tn="0" onclick="selectTN(this,'0')"><div class="choice-btn-label">Vacío</div></button>
+            <button class="choice-btn" data-tn="28" onclick="selectTN(this,'28')"><div class="choice-btn-label">28T</div></button>
+            <button class="choice-btn" data-tn="30" onclick="selectTN(this,'30')"><div class="choice-btn-label">30T</div></button>
+            <button class="choice-btn" data-tn="35" onclick="selectTN(this,'35')"><div class="choice-btn-label">35T</div></button>
+            <button class="choice-btn" data-tn="36" onclick="selectTN(this,'36')"><div class="choice-btn-label">+35T</div></button>
+          </div>
+        </div>
+        <div class="fe" id="tf-err"></div>
+        <button class="btn btn-p" onclick="saveTramo()">AGREGAR TRAMO</button>
+      </div>
+    </div>
+    <button class="btn btn-p btn-grn" id="btn-tramos-ok" onclick="mcNext(3)" style="display:none">CONTINUAR CON ESTOS TRAMOS →</button>
+  </div>
+
+  <!-- MC4: Nivel tanque -->
+  <div class="wz-screen" id="mc4">
+    <div><div class="sc-title">TANQUE</div><div class="sc-sub">¿Cuánto combustible hay en el tanque ahora?</div></div>
+    <div class="tank-wrap">
+      <svg class="tank-svg" viewBox="0 0 120 200">
+        <rect x="20" y="10" width="80" height="160" rx="12" fill="var(--bg3)" stroke="var(--border2)" stroke-width="2"/>
+        <rect id="tank-fill" x="22" y="108" width="76" height="60" fill="rgba(232,184,75,0.3)"/>
+        <rect x="20" y="10" width="80" height="160" rx="12" fill="none" stroke="var(--accent)" stroke-width="2" opacity="0.5"/>
+        <text id="tank-pct-txt" x="60" y="95" text-anchor="middle" fill="var(--accent)" font-family="'Bebas Neue'" font-size="22">50%</text>
+        <rect x="45" y="0" width="30" height="14" rx="4" fill="var(--bg3)" stroke="var(--border2)" stroke-width="1.5"/>
+      </svg>
+      <div class="tank-levels" id="tank-lvls"></div>
+    </div>
+  </div>
+
+  <!-- MC5: Ruta y km -->
+  <div class="wz-screen" id="mc5">
+    <div><div class="sc-title">RUTA</div><div class="sc-sub">Origen y destino del viaje completo para calcular los km.</div></div>
+    <div class="card">
+      <div class="card-body">
+        <div class="fg"><label class="fl">Desde (gasolinera / salida) *</label><input type="text" class="fi" id="mc-orig" placeholder="ej: Rosario" oninput="this.value=this.value.toUpperCase();mcCalcKm()"></div>
+        <div class="fg"><label class="fl">Hasta (destino) *</label><input type="text" class="fi" id="mc-dest" placeholder="ej: Buenos Aires" oninput="this.value=this.value.toUpperCase();mcCalcKm()"></div>
+        <div class="fg"><label class="fl">Km totales</label><input type="number" class="fi" id="mc-km" placeholder="Se calcula automáticamente"><div class="maps-hint" id="mc-mhint">Ingresá origen y destino para calcular</div></div>
+      </div>
+    </div>
+    <button class="btn btn-p" onclick="mcCalcular()">CALCULAR →</button>
+    <div class="fe" id="mc-err" style="text-align:center"></div>
+  </div>
+
+  <!-- MC6: Resultado -->
+  <div class="wz-screen" id="mc6">
+    <div><div class="sc-title">RESULTADO</div></div>
+    <div class="card">
+      <div class="card-body">
+        <div class="res-big">
+          <div class="res-num" id="mc-res-litros">—</div>
+          <div class="res-unit">Litros a cargar</div>
+          <div class="res-badge badge-ok" id="mc-res-badge">CARGA OK</div>
+        </div>
+        <div class="div"></div>
+        <div id="mc-res-datos"></div>
+      </div>
+    </div>
+    <!-- Precio combustible opcional -->
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">Precio del combustible</div>
+        <div style="font-size:11px;color:var(--text3)">opcional</div>
+      </div>
+      <div class="card-body">
+        <div class="fg"><label class="fl">Precio en esta gasolinera ($/L)</label><input type="number" class="fi" id="mc-precio" placeholder="ej: 1450" oninput="mcCalcCosto()"></div>
+        <div id="mc-costo-wrap" style="display:none">
+          <div class="div"></div>
+          <div class="dr"><span class="dr-l">Costo total de combustible</span><span class="dr-v" id="mc-costo-total" style="color:var(--accent)">$0</span></div>
+        </div>
+        <div class="fh">Este dato se pasa automáticamente al módulo de Rentabilidad</div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <button class="btn btn-grn" onclick="irARent()">📊 CALCULAR RENTABILIDAD DE ESTE VIAJE</button>
+      <button class="btn btn-g" onclick="guardarViaje()">GUARDAR EN HISTORIAL</button>
+    </div>
+    <div id="mc-guard-ok" style="display:none;text-align:center;color:var(--green);font-size:13px;margin-top:4px">✓ Guardado en historial</div>
+  </div>
+</div>
+
+<!-- ===== MR WIZARD ===== -->
+<div class="page" id="PMR">
+  <div class="wz-header">
+    <button class="wz-back" onclick="mrBack()">←</button>
+    <div class="wz-title" id="mr-title">Rentabilidad</div>
+    <div class="wz-step" id="mr-step"></div>
+  </div>
+  <div class="prog-bar"><div class="prog-fill" id="mr-prog"></div></div>
+
+  <!-- MR1: Quién maneja -->
+  <div class="wz-screen active" id="mr1">
+    <div><div class="sc-title">¿QUIÉN MANEJA?</div><div class="sc-sub">Esto cambia el cálculo de costos y el objetivo de rentabilidad.</div></div>
+    <div class="choice-grid cols2">
+      <button class="choice-btn" onclick="selectManeja('chofer')">
+        <div class="choice-btn-icon">👨‍✈️</div>
+        <div class="choice-btn-label">Chofer contratado</div>
+        <div class="choice-btn-sub">Cobra un % del flete</div>
+      </button>
+      <button class="choice-btn" onclick="selectManeja('yo')">
+        <div class="choice-btn-icon">🧑‍💼</div>
+        <div class="choice-btn-label">Yo manejo</div>
+        <div class="choice-btn-sub">Sin costo de chofer</div>
+      </button>
+    </div>
+  </div>
+
+  <!-- MR2: Tarifa -->
+  <div class="wz-screen" id="mr2">
+    <div><div class="sc-title">TARIFA</div><div class="sc-sub">¿Cómo se cobra este flete?</div></div>
+    <div class="choice-grid cols2">
+      <button class="choice-btn" onclick="selectTarifa('tn')">
+        <div class="choice-btn-icon">⚖️</div>
+        <div class="choice-btn-label">Por tonelada</div>
+        <div class="choice-btn-sub">Precio por cada TN descargada</div>
+      </button>
+      <button class="choice-btn" onclick="selectTarifa('fijo')">
+        <div class="choice-btn-icon">💰</div>
+        <div class="choice-btn-label">Precio fijo</div>
+        <div class="choice-btn-sub">Monto cerrado por el viaje</div>
+      </button>
+    </div>
+  </div>
+
+  <!-- MR3: Datos tarifa -->
+  <div class="wz-screen" id="mr3">
+    <div><div class="sc-title" id="mr3-title">MONTO</div><div class="sc-sub" id="mr3-sub">Ingresá los datos del flete</div></div>
+    <div class="card">
+      <div class="card-body" id="mr3-body">
+        <!-- Se llena dinámicamente según tipo de tarifa -->
+      </div>
+    </div>
+    <div class="info-box" id="mr3-iva-info">El % del chofer se calcula siempre sobre el monto sin IVA.</div>
+    <button class="btn btn-p" onclick="mrNext(3)">CONTINUAR →</button>
+    <div class="fe" id="mr3-err" style="text-align:center"></div>
+  </div>
+
+  <!-- MR4: % Chofer -->
+  <div class="wz-screen" id="mr4">
+    <div><div class="sc-title">CHOFER</div><div class="sc-sub" id="mr4-sub">¿Qué porcentaje cobra el chofer sobre el monto sin IVA?</div></div>
+    <div class="card">
+      <div class="card-body">
+        <div class="fg"><label class="fl">Porcentaje del chofer (%)</label><input type="number" class="fi" id="mr-pct" placeholder="ej: 15" step="0.5" min="0" max="100" oninput="mrCalcChofer()"></div>
+        <div class="dr" style="margin-top:8px">
+          <span class="dr-l">Monto del chofer</span>
+          <span class="dr-v" style="color:var(--accent)" id="mr-monto-ch">$0</span>
+        </div>
+        <div class="fh" id="mr-base-info">Sobre una base de $0 sin IVA</div>
+      </div>
+    </div>
+    <button class="btn btn-p" onclick="mrNext(4)">CONTINUAR →</button>
+  </div>
+
+  <!-- MR5: Costos del viaje -->
+  <div class="wz-screen" id="mr5">
+    <div><div class="sc-title">COSTOS</div><div class="sc-sub">Ingresá los gastos del viaje. Podés dejar en blanco los que no apliquen.</div></div>
+    <div class="card">
+      <div class="card-body">
+        <div class="fr">
+          <div class="fg"><label class="fl">Combustible ($)</label><input type="number" class="fi" id="mr-comb" placeholder="0" oninput="mrActCostos()"></div>
+          <div class="fg"><label class="fl">Peajes ($)</label><input type="number" class="fi" id="mr-peaj" placeholder="0" oninput="mrActCostos()"></div>
+        </div>
+        <div class="fr">
+          <div class="fg"><label class="fl">Viáticos ($)</label><input type="number" class="fi" id="mr-viat" placeholder="0" oninput="mrActCostos()"></div>
+          <div class="fg"><label class="fl">Otros ($)</label><input type="number" class="fi" id="mr-otro" placeholder="0" oninput="mrActCostos()"></div>
+        </div>
+        <div class="div"></div>
+        <div class="dr"><span class="dr-l">Total costos variables</span><span class="dr-v" id="mr-total-cv">$0</span></div>
+      </div>
+    </div>
+    <!-- Costos fijos opcionales -->
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">Costos fijos del camión</div>
+        <div style="font-size:11px;color:var(--text3)">opcional</div>
+      </div>
+      <div class="card-body">
+        <div class="sw-row">
+          <div class="sw-lbl">Incluir costos fijos prorrateados</div>
+          <label class="sw"><input type="checkbox" id="mr-cf-tog" onchange="toggleCF()"><div class="sw-sl"></div></label>
+        </div>
+        <div id="mr-cf-wrap" style="display:none">
+          <div class="fg"><label class="fl">Camión</label>
+            <select class="fs" id="mr-cf-v" onchange="mrCalcCF()"><option value="">Seleccioná camión...</option></select>
+          </div>
+          <div class="fg"><label class="fl">Km del viaje</label><input type="number" class="fi" id="mr-cf-km" placeholder="ej: 800" oninput="mrCalcCF()"></div>
+          <div class="dr"><span class="dr-l">Costos fijos prorrateados</span><span class="dr-v" style="color:var(--accent)" id="mr-cf-val">$0</span></div>
+        </div>
+      </div>
+    </div>
+    <button class="btn btn-p" onclick="mrCalcular()">CALCULAR RENTABILIDAD →</button>
+    <div class="fe" id="mr5-err" style="text-align:center"></div>
+  </div>
+
+  <!-- MR6: Resultado -->
+  <div class="wz-screen" id="mr6">
+    <div><div class="sc-title">RESULTADO</div></div>
+    <div id="mr-res-box"></div>
+    <div class="card" id="mr-det-card">
+      <div class="card-head"><div class="card-title">Detalle</div></div>
+      <div class="card-body" id="mr-det"></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <button class="btn btn-g" onclick="guardarRent()">GUARDAR EN HISTORIAL</button>
+      <button class="btn btn-g" onclick="goHome()">VOLVER AL INICIO</button>
+    </div>
+    <div id="mr-guard-ok" style="display:none;text-align:center;color:var(--green);font-size:13px;margin-top:4px">✓ Guardado en historial</div>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bnav" id="BN">
+  <div class="bnav-inner">
+    <button class="nb on" id="bn-home" onclick="goScreen('home',this)"><span class="nb-icon">🏠</span>Inicio</button>
+    <button class="nb" id="bn-hist" onclick="goScreen('hist',this)"><span class="nb-icon">🗓</span>Historial</button>
+    <button class="nb" id="bn-cfg" onclick="goScreen('cfg',this)"><span class="nb-icon">⚙</span>Config</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<div id="OV" onclick="closeUM()"></div>
+
+<!-- GOOGLE MAPS -->
+<script>
+const MAPS_KEY='AIzaSyDikvQ3kMT7l2tfGBw0wdA7Wf2101DN_L8';
+let mapsReady=false;
+function onMapsReady(){mapsReady=true;}
+const _ms=document.createElement('script');
+_ms.src=`https://maps.googleapis.com/maps/api/js?key=${MAPS_KEY}&callback=onMapsReady&language=es`;
+_ms.async=true;_ms.defer=true;document.head.appendChild(_ms);
+</script>
+
+<!-- FIREBASE + APP -->
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import{getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,signOut,onAuthStateChanged,sendPasswordResetEmail,sendEmailVerification,reload}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import{getFirestore,doc,setDoc,getDoc,collection,addDoc,getDocs,updateDoc,deleteDoc,serverTimestamp,query,orderBy,limit,where}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const FB={apiKey:"AIzaSyA_-rIKaByhEJzf3kTuX3yyV1WcfHl2RUM",authDomain:"flotar-a5906.firebaseapp.com",projectId:"flotar-a5906",storageBucket:"flotar-a5906.firebasestorage.app",messagingSenderId:"958657080561",appId:"1:958657080561:web:a3a664eca4efe3a4c34d50"};
+const app=initializeApp(FB);
+const auth=getAuth(app);
+const db=getFirestore(app);
+
+// ===== ESTADO =====
+let uid=null,isDriver=false,driverData=null,ignoreAuth=false;
+let D={vehiculos:[],choferes:[],config:{},histViajes:[],histRent:[]};
+let mcState={},mrState={};
+let hFilter='todo',hTab='v';
+
+// ===== FIRESTORE =====
+const col=n=>collection(db,`empresas/${uid}/${n}`);
+async function fGet(p){try{const d=await getDoc(doc(db,p));return d.exists()?d.data():null;}catch{return null;}}
+async function fSet(p,data){try{await setDoc(doc(db,p),data,{merge:true});return true;}catch{showToast('Error al guardar','err');return false;}}
+async function fAdd(c,data){try{return await addDoc(col(c),{...data,createdAt:serverTimestamp()});}catch{showToast('Error al guardar','err');return null;}}
+async function fAll(c,ord='createdAt'){try{const q=query(col(c),orderBy(ord,'desc'),limit(200));const s=await getDocs(q);return s.docs.map(d=>({id:d.id,...d.data()}));}catch{try{const s=await getDocs(col(c));return s.docs.map(d=>({id:d.id,...d.data()}));}catch{return[];}}}
+async function fUpd(c,id,data){try{await updateDoc(doc(db,`empresas/${uid}/${c}/${id}`),data);return true;}catch{return false;}}
+async function fDel(c,id){try{await deleteDoc(doc(db,`empresas/${uid}/${c}/${id}`));return true;}catch{return false;}}
+
+async function loadData(){
+  if(!uid)return;
+  const[ve,ch,hv,hr,cfg]=await Promise.all([
+    fAll('vehiculos','tractor'),fAll('choferes','nombre'),
+    fAll('historial'),fAll('histRent'),
+    fGet(`empresas/${uid}`)
+  ]);
+  D.vehiculos=ve;D.choferes=ch;D.histViajes=hv;D.histRent=hr;
+  D.config=cfg||{};
+}
+
+// ===== AUTH =====
+onAuthStateChanged(auth,async user=>{
+  if(ignoreAuth)return;
+  hideLoad();
+  if(user&&user.emailVerified){
+    uid=user.uid;
+    await loadData();
+    enterApp(user);
+  }else if(user&&!user.emailVerified){
+    document.getElementById('v-email').textContent=user.email;
+    showPage('PL');showPanel('pVerify');
+  }else{
+    showPage('PL');showPanel('pLogin');
+  }
+});
+setTimeout(hideLoad,4000);
+
+function enterApp(user){
+  const name=(D.config.adminNombre||user.email.split('@')[0]).toUpperCase();
+  document.getElementById('uname').textContent=name;
+  document.getElementById('cfg-email').textContent=user.email;
+  document.getElementById('cfg-emp').textContent=D.config.empresa||'—';
+  // Check if needs onboarding
+  if(!D.config.onboardingDone&&!isDriver){
+    renderOBChoferes();renderOBVehiculos();
+    if(D.config.margenChofer)document.getElementById('mg-ch').value=D.config.margenChofer;
+    if(D.config.margenYo)document.getElementById('mg-yo').value=D.config.margenYo;
+    showPage('POB');setOBStep(1);
+  }else{
+    showMainApp();
+  }
+}
+
+function showMainApp(){
+  renderCfgChoferes();renderCfgVehiculos();renderSelectVehiculos();
+  renderHistViajes();renderHistRent();
+  checkVencimientos();
+  if(D.config.margenChofer)document.getElementById('cfg-mg-ch').value=D.config.margenChofer||25;
+  if(D.config.margenYo)document.getElementById('cfg-mg-yo').value=D.config.margenYo||15;
+  showPage('PA');
+  document.getElementById('BN').classList.add('show');
+  goScreen('home');
+}
+
+// ===== LOGIN =====
+window.doLogin=async()=>{
+  const e=_v('li-email'),p=_v('li-pass'),err=g('li-err');
+  err.textContent='';
+  if(!e||!p){err.textContent='Completá email y contraseña';return;}
+  const btn=g('btn-li');btn.disabled=true;btn.textContent='INGRESANDO...';
+  try{await signInWithEmailAndPassword(auth,e,p);}
+  catch(ex){
+    const m={'auth/invalid-credential':'Email o contraseña incorrectos','auth/user-not-found':'Email o contraseña incorrectos','auth/wrong-password':'Email o contraseña incorrectos','auth/too-many-requests':'Demasiados intentos. Esperá unos minutos.'};
+    err.textContent=m[ex.code]||'Error al ingresar';
+    btn.disabled=false;btn.textContent='ENTRAR';
+  }
+};
+
+window.doRegister=async()=>{
+  const nom=_v('re-nom').trim(),ape=_v('re-ape').trim(),emp=_v('re-emp').trim(),
+        email=_v('re-email').trim(),pass=_v('re-pass'),pass2=_v('re-pass2');
+  const err=g('re-err');err.textContent='';
+  if(!nom||!ape){err.textContent='Ingresá nombre y apellido';return;}
+  if(!emp){err.textContent='Ingresá el nombre de tu empresa';return;}
+  if(!email){err.textContent='Ingresá tu email';return;}
+  const pe=validPass(pass);if(pe){err.textContent=pe;return;}
+  if(pass!==pass2){err.textContent='Las contraseñas no coinciden';return;}
+  const btn=g('btn-re');btn.disabled=true;btn.textContent='Creando cuenta...';
+  ignoreAuth=true;
+  try{
+    const c=await createUserWithEmailAndPassword(auth,email,pass);
+    uid=c.user.uid;
+    await sendEmailVerification(c.user);
+    await setDoc(doc(db,`usuarios/${uid}`),{email,nombre:nom,apellido:ape,role:'owner',createdAt:serverTimestamp()});
+    await setDoc(doc(db,`empresas/${uid}`),{adminEmail:email,adminNombre:nom,adminApellido:ape,empresa:emp,plan:'trial',onboardingDone:false,margenChofer:25,margenYo:15,createdAt:serverTimestamp()});
+    sessionStorage.setItem('f_uid',uid);
+    ignoreAuth=false;
+    g('v-email').textContent=email;
+    showPanel('pVerify');
+    showToast('Cuenta creada. Verificá tu email.','ok');
+  }catch(ex){
+    ignoreAuth=false;
+    const m={'auth/email-already-in-use':'Ese email ya está registrado.','auth/invalid-email':'Email inválido.','auth/weak-password':'Contraseña muy débil.'};
+    err.textContent=m[ex.code]||'Error al registrar';
+    btn.disabled=false;btn.textContent='CREAR CUENTA GRATIS';
+  }
+};
+
+window.checkVerified=async()=>{
+  const btn=g('btn-v');btn.disabled=true;btn.textContent='Verificando...';
+  try{
+    await reload(auth.currentUser);
+    if(auth.currentUser.emailVerified){
+      ignoreAuth=false;uid=auth.currentUser.uid;
+      await loadData();enterApp(auth.currentUser);
+    }else{g('v-err').textContent='Todavía no confirmaste. Revisá tu bandeja.';}
+  }catch{g('v-err').textContent='Error al verificar.';}
+  btn.disabled=false;btn.textContent='YA CONFIRMÉ';
+};
+
+window.resendVer=async()=>{try{await sendEmailVerification(auth.currentUser);showToast('Email reenviado','ok');}catch{showToast('Error al reenviar','err');}};
+window.doForgot=async()=>{
+  const e=_v('fo-email').trim(),err=g('fo-err'),ok=g('fo-ok');
+  err.textContent='';ok.style.display='none';
+  if(!e){err.textContent='Ingresá tu email';return;}
+  const btn=g('btn-fo');btn.disabled=true;btn.textContent='ENVIANDO...';
+  try{await sendPasswordResetEmail(auth,e);ok.style.display='block';}
+  catch{err.textContent='No hay cuenta con ese email.';}
+  btn.disabled=false;btn.textContent='ENVIAR LINK';
+};
+
+window.doLogout=async()=>{
+  await signOut(auth).catch(()=>{});
+  uid=null;isDriver=false;driverData=null;D={vehiculos:[],choferes:[],config:{},histViajes:[],histRent:[]};
+  document.getElementById('BN').classList.remove('show');
+  showPage('PL');showPanel('pLogin');
+};
+
+window.doChofer=async()=>{
+  const pin=[0,1,2,3].map(i=>_v('p'+i)||'').join('');
+  if(pin.length<4)return;
+  const err=g('p-err');
+  const cid=sessionStorage.getItem('f_uid');
+  if(!cid){err.textContent='No hay empresa registrada en este dispositivo.';return;}
+  uid=cid;
+  const choferes=await fAll('choferes','nombre');
+  const ch=choferes.find(c=>String(c.dni).slice(-4)===pin);
+  if(!ch){err.textContent='PIN incorrecto. Verificá los últimos 4 dígitos de tu DNI.';uid=null;return;}
+  D.vehiculos=await fAll('vehiculos','tractor');
+  D.config=await fGet(`empresas/${uid}`)||{};
+  isDriver=true;driverData=ch;
+  document.getElementById('uname').textContent=ch.nombre.split(' ')[0];
+  renderSelectVehiculos();
+  showPage('PA');
+  document.getElementById('BN').classList.add('show');
+  goScreen('home');
+};
+
+// ===== ONBOARDING =====
+let obStep=1;
+function setOBStep(n){
+  obStep=n;
+  ['ob1','ob2','ob3'].forEach((id,i)=>{g(id).classList.toggle('active',i+1===n);});
+  g('ob-prog').style.width=(n/3*100)+'%';
+  g('ob-step').textContent=n+' / 3';
+  const titles=['Choferes','Camiones','Rentabilidad'];
+  g('ob-title').textContent=titles[n-1];
+}
+window.obBack=()=>{if(obStep>1)setOBStep(obStep-1);else{showPage('PL');showPanel('pLogin');}};
+window.obNext=n=>{
+  if(n===1&&!D.vehiculos.length&&!D.choferes.length){
+    // puede saltear ambos
+  }
+  setOBStep(n+1);
+};
+window.finishOnboarding=async()=>{
+  const mgCh=parseInt(g('mg-ch').value)||25;
+  const mgYo=parseInt(g('mg-yo').value)||15;
+  await fSet(`empresas/${uid}`,{onboardingDone:true,margenChofer:mgCh,margenYo:mgYo});
+  D.config.onboardingDone=true;D.config.margenChofer=mgCh;D.config.margenYo=mgYo;
+  showToast('¡Configuración lista!','ok');
+  showMainApp();
+};
+
+// ===== CHOFERES (ONBOARDING) =====
+let editCHId=null,inCfg=false;
+window.showChForm=()=>{
+  inCfg=document.getElementById('screen-cfg').classList.contains('active');
+  const form=inCfg?g('cfg-ch-form'):g('ob-ch-form');
+  form.style.display='block';
+  editCHId=null;
+  const nom=inCfg?'cfg-ch-nom':'ch-nom';
+  const dni=inCfg?'cfg-ch-dni':'ch-dni';
+  g(nom).value='';g(dni).value='';
+  if(inCfg){g('cfg-ch-vlic').value='';g('cfg-ch-vpsi').value='';g('cfg-ch-eid').value='';g('cfg-ch-err').textContent='';}
+  else{g('ch-vlic').value='';g('ch-vpsi').value='';g('ch-err').textContent='';}
+};
+
+window.cancelChForm=()=>{g('ob-ch-form').style.display='none';};
+window.cancelCfgCh=()=>{g('cfg-ch-form').style.display='none';};
+
+async function _saveChofer(nom,dni,vlic,vpsi,editId){
+  if(!nom){return'Ingresá el nombre del chofer';}
+  if(!dni||String(dni).length<4){return'Ingresá el DNI completo (mínimo 4 dígitos)';}
+  const datos={nombre:nom,dni:parseInt(dni),pin:String(dni).slice(-4),vtoLicencia:vlic||null,vtoPsico:vpsi||null};
+  if(editId){await fUpd('choferes',editId,datos);}else{await fAdd('choferes',datos);}
+  await loadData();return null;
+}
+
+window.saveChofer=async()=>{
+  const nom=_v('ch-nom').trim(),dni=_v('ch-dni'),vlic=_v('ch-vlic'),vpsi=_v('ch-vpsi');
+  const err=await _saveChofer(nom,dni,vlic,vpsi,null);
+  if(err){g('ch-err').textContent=err;return;}
+  g('ob-ch-form').style.display='none';
+  renderOBChoferes();showToast('Chofer guardado','ok');
+};
+
+window.saveCfgChofer=async()=>{
+  const eid=_v('cfg-ch-eid');
+  const nom=_v('cfg-ch-nom').trim(),dni=_v('cfg-ch-dni'),vlic=_v('cfg-ch-vlic'),vpsi=_v('cfg-ch-vpsi');
+  const err=await _saveChofer(nom,dni,vlic,vpsi,eid||null);
+  if(err){g('cfg-ch-err').textContent=err;return;}
+  g('cfg-ch-form').style.display='none';
+  renderCfgChoferes();showToast('Chofer guardado','ok');
+};
+
+function renderOBChoferes(){
+  const el=g('ob-choferes-list');
+  if(!D.choferes.length){el.innerHTML='';return;}
+  el.innerHTML=D.choferes.map(c=>`
+    <div class="tramo-item" style="margin-bottom:8px">
+      <div><div class="tramo-ruta">${c.nombre}</div><div class="tramo-meta">PIN: ${c.pin} · DNI: ${c.dni}</div></div>
+      <button class="tramo-del" onclick="delChofer('${c.id}','ob')">×</button>
+    </div>`).join('');
+}
+
+function renderCfgChoferes(){
+  const el=g('cfg-ch-list');
+  if(!D.choferes.length){el.innerHTML='<div class="empty" style="padding:16px 0"><div class="empty-icon">👷</div>Sin choferes</div>';return;}
+  const hoy=new Date();
+  el.innerHTML=D.choferes.map(c=>{
+    const alerts=[];
+    if(c.vtoLicencia){const d=new Date(c.vtoLicencia);const dias=Math.ceil((d-hoy)/(1000*60*60*24));if(dias<=30)alerts.push(`Licencia vence en ${dias} días`);}
+    if(c.vtoPsico){const d=new Date(c.vtoPsico);const dias=Math.ceil((d-hoy)/(1000*60*60*24));if(dias<=30)alerts.push(`Psicofísico vence en ${dias} días`);}
+    return`<div class="dr">
+      <div><div style="font-weight:600;font-size:13px">${c.nombre}</div>
+      <div style="font-size:11px;color:var(--text3)">PIN: ${c.pin} · DNI: ${c.dni}</div>
+      ${alerts.map(a=>`<div class="venc-alert">${a}</div>`).join('')}
+      </div>
+      <div style="display:flex;gap:6px">
+        <button onclick="editCfgCh('${c.id}')" style="background:none;border:none;cursor:pointer;color:var(--text3);font-size:18px;padding:4px">✎</button>
+        <button onclick="delChofer('${c.id}','cfg')" style="background:none;border:none;cursor:pointer;color:var(--red);font-size:18px;padding:4px">×</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+window.editCfgCh=id=>{
+  const c=D.choferes.find(x=>x.id===id);if(!c)return;
+  g('cfg-ch-form').style.display='block';
+  g('cfg-ch-nom').value=c.nombre;g('cfg-ch-dni').value=c.dni;
+  g('cfg-ch-vlic').value=c.vtoLicencia||'';g('cfg-ch-vpsi').value=c.vtoPsico||'';
+  g('cfg-ch-eid').value=id;g('cfg-ch-err').textContent='';
+};
+
+window.delChofer=async(id,ctx)=>{
+  if(!confirm('¿Eliminar este chofer?'))return;
+  await fDel('choferes',id);await loadData();
+  if(ctx==='ob')renderOBChoferes();else renderCfgChoferes();
+  showToast('Chofer eliminado','ok');
+};
+
+// ===== VEHÍCULOS =====
+let editVId=null;
+window.showVForm=id=>{
+  const form=g('ob-v-form')||g('cfg-v-list');
+  const vf=g('ob-v-form');
+  if(vf){vf.style.display='block';}
+  g('btn-add-v').style.display='none';
+  editVId=id||null;
+  g('vf-title').textContent=id?'Editar camión':'Nuevo camión';
+  if(id){
+    const v=D.vehiculos.find(x=>x.id===id);if(!v)return;
+    g('v-pat').value=v.patente||v.tractor||'';g('v-marca').value=v.marca||'';g('v-mod').value=v.modelo||'';
+    g('v-tnk').value=v.tanque||'';g('v-r0').value=v.r0||'';g('v-r28').value=v.r28||'';
+    g('v-r30').value=v.r30||'';g('v-r35').value=v.r35||'';g('v-r36').value=v.r36||'';
+    g('v-mrg').value=v.margen||10;g('v-seg').value=v.cfSeg||'';g('v-sue').value=v.cfSue||'';
+    g('v-usd').value=v.cfUSD||'';g('v-cub').value=v.cfCub||'';g('v-cubkm').value=v.cfCubKm||'';
+    g('v-kmm').value=v.cfKmMes||'';
+  }else{
+    ['v-pat','v-marca','v-mod','v-tnk','v-r0','v-r28','v-r30','v-r35','v-r36','v-seg','v-sue','v-usd','v-cub','v-cubkm','v-kmm'].forEach(id=>{const el=g(id);if(el)el.value='';});
+    g('v-mrg').value=10;
+  }
+  g('v-err').textContent='';
+  g('v-edit-id').value=id||'';
+};
+
+window.cancelVForm=()=>{
+  const vf=g('ob-v-form');if(vf)vf.style.display='none';
+  g('btn-add-v').style.display='block';
+};
+
+window.saveVehiculo=async()=>{
+  const pat=_v('v-pat').trim().toUpperCase();
+  const tnk=parseFloat(_v('v-tnk'))||0;
+  const r0=parseFloat(_v('v-r0'))||0;
+  const err=g('v-err');
+  if(!pat){err.textContent='La patente es obligatoria';return;}
+  if(!tnk){err.textContent='Ingresá la capacidad del tanque';return;}
+  if(!r0){err.textContent='Ingresá el rendimiento vacío';return;}
+  const datos={patente:pat,tractor:pat,marca:_v('v-marca').trim(),modelo:_v('v-mod').trim(),
+    tanque:tnk,r0,r28:parseFloat(_v('v-r28'))||r0,r30:parseFloat(_v('v-r30'))||r0,
+    r35:parseFloat(_v('v-r35'))||r0,r36:parseFloat(_v('v-r36'))||r0,
+    margen:parseFloat(_v('v-mrg'))||10,
+    cfSeg:parseFloat(_v('v-seg'))||0,cfSue:parseFloat(_v('v-sue'))||0,
+    cfUSD:parseFloat(_v('v-usd'))||0,cfCub:parseFloat(_v('v-cub'))||0,
+    cfCubKm:parseFloat(_v('v-cubkm'))||0,cfKmMes:parseFloat(_v('v-kmm'))||0
+  };
+  const eid=_v('v-edit-id');
+  if(eid){await fUpd('vehiculos',eid,datos);}else{await fAdd('vehiculos',datos);}
+  await loadData();
+  cancelVForm();renderOBVehiculos();renderCfgVehiculos();renderSelectVehiculos();
+  showToast('Camión guardado','ok');
+};
+
+function renderOBVehiculos(){
+  const el=g('ob-vehiculos-list');
+  if(!D.vehiculos.length){el.innerHTML='';return;}
+  el.innerHTML=D.vehiculos.map(v=>`
+    <div class="tramo-item" style="margin-bottom:8px">
+      <div><div class="tramo-ruta">${v.patente||v.tractor}</div><div class="tramo-meta">${[v.marca,v.modelo].filter(Boolean).join(' ')||'Sin detalles'} · ${v.tanque}L</div></div>
+      <div style="display:flex;gap:4px">
+        <button onclick="showVForm('${v.id}')" style="background:none;border:none;cursor:pointer;color:var(--text3);font-size:18px;padding:4px">✎</button>
+        <button onclick="delV('${v.id}')" style="background:none;border:none;cursor:pointer;color:var(--red);font-size:18px;padding:4px">×</button>
+      </div>
+    </div>`).join('');
+}
+
+function renderCfgVehiculos(){
+  const el=g('cfg-v-list');
+  if(!D.vehiculos.length){el.innerHTML='<div class="empty" style="padding:16px 0"><div class="empty-icon">🚛</div>Sin camiones</div>';return;}
+  el.innerHTML=D.vehiculos.map(v=>`
+    <div class="dr">
+      <div><div style="font-weight:600;font-size:13px">${v.patente||v.tractor}</div><div style="font-size:11px;color:var(--text3)">${[v.marca,v.modelo].filter(Boolean).join(' ')||'Sin detalles'} · Tanque: ${v.tanque}L</div></div>
+      <div style="display:flex;gap:6px">
+        <button onclick="showVForm('${v.id}')" style="background:none;border:none;cursor:pointer;color:var(--text3);font-size:18px;padding:4px">✎</button>
+        <button onclick="delV('${v.id}')" style="background:none;border:none;cursor:pointer;color:var(--red);font-size:18px;padding:4px">×</button>
+      </div>
+    </div>`).join('');
+}
+
+function renderSelectVehiculos(){
+  const opts='<option value="">Seleccioná camión...</option>'+D.vehiculos.map(v=>`<option value="${v.id}">${v.patente||v.tractor}${v.marca?' — '+v.marca:''}</option>`).join('');
+  ['mr-cf-v'].forEach(id=>{const el=g(id);if(el){const v=el.value;el.innerHTML=opts;el.value=v;}});
+}
+
+window.delV=async id=>{
+  if(!confirm('¿Eliminar este camión?'))return;
+  await fDel('vehiculos',id);await loadData();
+  renderOBVehiculos();renderCfgVehiculos();renderSelectVehiculos();
+  showToast('Camión eliminado','ok');
+};
+
+// ===== MARGENES CFG =====
+window.saveMargenes=async()=>{
+  const ch=parseInt(_v('cfg-mg-ch'))||25;
+  const yo=parseInt(_v('cfg-mg-yo'))||15;
+  await fSet(`empresas/${uid}`,{margenChofer:ch,margenYo:yo});
+  D.config.margenChofer=ch;D.config.margenYo=yo;
+  showToast('Márgenes guardados','ok');
+};
+
+// ===== VENCIMIENTOS =====
+function checkVencimientos(){
+  const hoy=new Date();
+  const alerts=[];
+  D.choferes.forEach(c=>{
+    if(c.vtoLicencia){const d=new Date(c.vtoLicencia);const dias=Math.ceil((d-hoy)/(1000*60*60*24));if(dias<=30&&dias>=0)alerts.push(`⚠️ Licencia de ${c.nombre}: vence en ${dias} días`);}
+    if(c.vtoPsico){const d=new Date(c.vtoPsico);const dias=Math.ceil((d-hoy)/(1000*60*60*24));if(dias<=30&&dias>=0)alerts.push(`⚠️ Psicofísico de ${c.nombre}: vence en ${dias} días`);}
+  });
+  const el=g('venc-alerts');
+  if(!alerts.length){el.innerHTML='';return;}
+  el.innerHTML=alerts.map(a=>`<div class="venc-alert">${a}</div>`).join('');
+}
+
+// ===== MC WIZARD =====
+window.startMC=()=>{
+  mcState={vid:null,tramos:[],nivel:5,orig:'',dest:'',km:0,litros:0,precio:0,costo:0};
+  if(D.vehiculos.length===1){
+    mcState.vid=D.vehiculos[0].id;
+    mcGoStep(2);
+  }else if(D.vehiculos.length===0){
+    showToast('Primero agregá un camión en Configuración','err');return;
+  }else{
+    mcGoStep(1);
+  }
+  showPage('PMC');
+};
+
+let mcCurrentStep=1;
+function mcGoStep(n){
+  mcCurrentStep=n;
+  ['mc1','mc2','mc3','mc4','mc5','mc6'].forEach((id,i)=>{g(id).classList.toggle('active',i+1===n);});
+  const pct=[17,33,50,67,83,100];
+  g('mc-prog').style.width=pct[n-1]+'%';
+  g('mc-step').textContent=n+' / 6';
+  if(n===1)renderMCVehiculos();
+  if(n===4)renderTankLevels();
+}
+
+window.mcBack=()=>{
+  if(mcCurrentStep>1)mcGoStep(mcCurrentStep-1);
+  else{showPage('PA');goScreen('home');}
+};
+window.mcNext=n=>mcGoStep(n+1);
+
+function renderMCVehiculos(){
+  g('mc-vehiculos').innerHTML=D.vehiculos.map(v=>`
+    <button class="choice-btn${mcState.vid===v.id?' on':''}" onclick="selectVehiculo('${v.id}')">
+      <div class="choice-btn-icon">🚛</div>
+      <div class="choice-btn-label">${v.patente||v.tractor}</div>
+      <div class="choice-btn-sub">${[v.marca,v.modelo].filter(Boolean).join(' ')||''} · ${v.tanque}L</div>
+    </button>`).join('');
+}
+
+window.selectVehiculo=id=>{mcState.vid=id;mcGoStep(2);};
+window.selectTramos=n=>{mcState.numTramos=n;if(n===1){mcState.tramos=[];mcGoStep(4);}else mcGoStep(3);};
+
+let tfTN='0';
+window.selectTN=(btn,tn)=>{
+  document.querySelectorAll('#tf-tn-grid .choice-btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');tfTN=tn;
+};
+
+window.saveTramo=()=>{
+  const orig=_v('tf-orig').trim(),dest=_v('tf-dest').trim();
+  if(!orig||!dest){g('tf-err').textContent='Ingresá origen y destino';return;}
+  mcState.tramos.push({orig,dest,tn:tfTN});
+  g('tf-orig').value='';g('tf-dest').value='';
+  document.querySelectorAll('#tf-tn-grid .choice-btn').forEach(b=>b.classList.remove('on'));
+  document.querySelector('#tf-tn-grid .choice-btn').classList.add('on');tfTN='0';
+  renderTramosList();
+  g('btn-tramos-ok').style.display='block';
+  g('mc-tf-title').textContent='Tramo '+(mcState.tramos.length+1);
+  g('tf-err').textContent='';
+};
+
+function renderTramosList(){
+  const el=g('mc-tramos-list');
+  if(!mcState.tramos.length){el.innerHTML='';return;}
+  el.innerHTML=mcState.tramos.map((t,i)=>`
+    <div class="tramo-item" style="margin-bottom:8px">
+      <div>
+        <div class="tramo-num">Tramo ${i+1}</div>
+        <div class="tramo-ruta">${t.orig} → ${t.dest}</div>
+        <div class="tramo-meta">${t.tn==='0'?'Vacío':t.tn+'T'}</div>
+      </div>
+      <button class="tramo-del" onclick="delTramo(${i})">×</button>
+    </div>`).join('');
+}
+
+window.delTramo=i=>{mcState.tramos.splice(i,1);renderTramosList();if(!mcState.tramos.length)g('btn-tramos-ok').style.display='none';};
+
+function renderTankLevels(){
+  const v=D.vehiculos.find(x=>x.id===mcState.vid);
+  const lvls=[0,1,2,3,4,5,6,7,8,9,10];
+  g('tank-lvls').innerHTML=lvls.map(l=>`
+    <div class="tank-lvl${l===mcState.nivel?' on':''}" onclick="selectNivel(${l})">
+      <div class="tank-lvl-num">${l===0?'0':l*10}</div>
+      <div class="tank-lvl-pct">${l===0?'Vacío':l===10?'Lleno':'%'}</div>
+    </div>`).join('');
+  updateTankSVG(mcState.nivel);
+}
+
+window.selectNivel=l=>{
+  mcState.nivel=l;
+  document.querySelectorAll('.tank-lvl').forEach((el,i)=>el.classList.toggle('on',i===l));
+  updateTankSVG(l);
+  setTimeout(()=>mcGoStep(5),300);
+};
+
+function updateTankSVG(l){
+  const pct=l/10;
+  const fillH=Math.round(156*pct);
+  const fillY=168-fillH;
+  g('tank-fill').setAttribute('y',fillY);
+  g('tank-fill').setAttribute('height',fillH);
+  g('tank-pct-txt').textContent=(l*10)+'%';
+}
+
+let _mcKmTimer=null;
+window.mcCalcKm=()=>{
+  clearTimeout(_mcKmTimer);
+  _mcKmTimer=setTimeout(()=>{
+    const o=_v('mc-orig').trim(),d=_v('mc-dest').trim();
+    const hint=g('mc-mhint');
+    if(!o||!d){hint.textContent='Ingresá origen y destino';hint.className='maps-hint';return;}
+    if(!mapsReady){hint.textContent='Cargando Google Maps...';return;}
+    hint.textContent='Calculando...';
+    const svc=new google.maps.DistanceMatrixService();
+    svc.getDistanceMatrix({
+      origins:[o+', Argentina'],destinations:[d+', Argentina'],
+      travelMode:google.maps.TravelMode.DRIVING,language:'es'
+    },(res,status)=>{
+      if(status==='OK'&&res.rows[0].elements[0].status==='OK'){
+        const km=Math.round(res.rows[0].elements[0].distance.value/1000);
+        g('mc-km').value=km;
+        hint.textContent='✓ '+km+' km — Google Maps';
+        hint.className='maps-hint ok';
+      }else{hint.textContent='No se pudo calcular. Ingresá los km manualmente.';hint.className='maps-hint';}
+    });
+  },1000);
+};
+
+function getRendimiento(v,tn){
+  const t=parseFloat(tn)||0;
+  if(t===0)return{r:v.r0,label:'Vacío'};
+  if(t<=28)return{r:v.r28||v.r0,label:'28T'};
+  if(t<=30)return{r:v.r30||v.r0,label:'30T'};
+  if(t<=35)return{r:v.r35||v.r0,label:'35T'};
+  return{r:v.r36||v.r0,label:'+35T'};
+}
+
+window.mcCalcular=()=>{
+  const err=g('mc-err');err.textContent='';
+  const orig=_v('mc-orig').trim(),dest=_v('mc-dest').trim();
+  const km=parseFloat(_v('mc-km'))||0;
+  if(!orig||!dest){err.textContent='Ingresá origen y destino';return;}
+  if(!km){err.textContent='Ingresá los km del viaje';return;}
+  const v=D.vehiculos.find(x=>x.id===mcState.vid);
+  if(!v){err.textContent='Camión no encontrado';return;}
+
+  // Calcular por tramos o por viaje directo
+  let litrosTotalesNecesarios=0;
+  let tramoInfo=[];
+  if(mcState.tramos&&mcState.tramos.length>0){
+    // Con tramos: distribución proporcional de km (aproximado)
+    const kmPorTramo=km/mcState.tramos.length;
+    mcState.tramos.forEach(t=>{
+      const{r,label}=getRendimiento(v,t.tn);
+      const l=kmPorTramo/r;
+      litrosTotalesNecesarios+=l;
+      tramoInfo.push({...t,r,label,km:Math.round(kmPorTramo),litros:Math.round(l)});
+    });
+  }else{
+    // Tramo directo con el peso del primer tramo o vacío
+    const tn=mcState.tramos&&mcState.tramos[0]?mcState.tramos[0].tn:'0';
+    const{r,label}=getRendimiento(v,tn);
+    litrosTotalesNecesarios=km/r;
+    tramoInfo=[{tn,r,label,km,litros:Math.round(litrosTotalesNecesarios)}];
+  }
+
+  const margen=(v.margen||10)/100;
+  const litrosConMargen=litrosTotalesNecesarios*(1+margen);
+  const tanque=Number(v.tanque);
+  const litrosActuales=(mcState.nivel/10)*tanque;
+  const litrosCargar=Math.max(0,litrosConMargen-litrosActuales);
+  const litros=Math.ceil(litrosCargar/5)*5;
+
+  mcState.orig=orig;mcState.dest=dest;mcState.km=km;mcState.litros=litros;
+  mcState.litrosActuales=litrosActuales;mcState.tramoInfo=tramoInfo;
+  mcState.tanque=tanque;
+
+  // Mostrar resultado
+  g('mc-res-litros').textContent=litros;
+  const ok=litros>0&&(litrosActuales+litros)<=tanque;
+  g('mc-res-badge').className='res-badge '+(ok?'badge-ok':'badge-info');
+  g('mc-res-badge').textContent=litros===0?'TANQUE SUFICIENTE':'CARGA OK';
+
+  g('mc-res-datos').innerHTML=[
+    ['Camión',v.patente||v.tractor],
+    ['Km totales',km+' km'],
+    ['Litros en tanque',Math.round(litrosActuales)+' L ('+mcState.nivel*10+'%)'],
+    ...tramoInfo.map((t,i)=>[`Tramo ${i+1}`,`${t.orig||orig}→${t.dest||dest} · ${t.tn==='0'?'Vacío':t.tn+'T'} · ${t.r} km/L`]),
+  ].map(([l,v])=>`<div class="dr"><span class="dr-l">${l}</span><span class="dr-v">${v}</span></div>`).join('');
+
+  g('mc-guard-ok').style.display='none';
+  mcGoStep(6);
+};
+
+window.mcCalcCosto=()=>{
+  const precio=parseFloat(_v('mc-precio'))||0;
+  mcState.precio=precio;
+  if(precio&&mcState.litros){
+    const costo=Math.round(mcState.litros*precio);
+    mcState.costo=costo;
+    g('mc-costo-total').textContent='$'+costo.toLocaleString('es-AR');
+    g('mc-costo-wrap').style.display='block';
+  }else{g('mc-costo-wrap').style.display='none';}
+};
+
+window.guardarViaje=async()=>{
+  const v=D.vehiculos.find(x=>x.id===mcState.vid);
+  await fAdd('historial',{tipo:'viaje',fecha:new Date().toISOString(),
+    vehiculoId:mcState.vid,patente:v?.patente||v?.tractor||'—',
+    origen:mcState.orig,destino:mcState.dest,km:mcState.km,
+    litros:mcState.litros,nivel:mcState.nivel*10,
+    precio:mcState.precio||0,costo:mcState.costo||0,
+    chofer:driverData?.nombre||null
+  });
+  await loadData();renderHistViajes();
+  g('mc-guard-ok').style.display='block';
+  showToast('Viaje guardado','ok');
+};
+
+window.irARent=()=>startMR(mcState);
+
+// ===== MR WIZARD =====
+window.startMR=datos=>{
+  mrState={maneja:null,tipoTarifa:null,tn:0,tarifaFija:0,tarifaTN:0,tarifaBase:0,
+    pctChofer:0,montoChofer:0,combustible:0,peajes:0,viaticos:0,otros:0,
+    cfViaje:0,costoTotal:0,ganancia:0,margenPct:0,
+    orig:'',dest:'',km:0,fromMC:!!datos
+  };
+  // Si viene de MC, prellenar datos
+  if(datos){
+    mrState.combustible=datos.costo||0;
+    mrState.orig=datos.orig||'';mrState.dest=datos.dest||'';mrState.km=datos.km||0;
+    if(datos.tramoInfo&&datos.tramoInfo.length){
+      const tn=datos.tramoInfo.find(t=>t.tn!=='0');
+      if(tn)mrState.tn=parseFloat(tn.tn)||0;
+    }
+  }
+  mrGoStep(1);
+  showPage('PMR');
+};
+
+let mrCurrentStep=1;
+function mrGoStep(n){
+  mrCurrentStep=n;
+  ['mr1','mr2','mr3','mr4','mr5','mr6'].forEach((id,i)=>{g(id).classList.toggle('active',i+1===n);});
+  const pct=[17,33,50,67,83,100];
+  g('mr-prog').style.width=pct[n-1]+'%';
+  g('mr-step').textContent=n+' / 6';
+  if(n===3)renderMR3();
+  if(n===4)renderMR4();
+  if(n===5)renderMR5();
+}
+
+window.mrBack=()=>{
+  if(mrCurrentStep>1)mrGoStep(mrCurrentStep-1);
+  else{if(mrState.fromMC)showPage('PMC');else{showPage('PA');goScreen('home');}}
+};
+
+window.selectManeja=tipo=>{
+  mrState.maneja=tipo;
+  mrGoStep(2);
+};
+
+window.selectTarifa=tipo=>{
+  mrState.tipoTarifa=tipo;
+  mrGoStep(3);
+};
+
+function renderMR3(){
+  const es_tn=mrState.tipoTarifa==='tn';
+  g('mr3-title').textContent=es_tn?'TONELADAS':'MONTO';
+  g('mr3-sub').textContent=es_tn?'Ingresá las toneladas y la tarifa':'Ingresá el monto cerrado del flete';
+  const base_tn=mrState.tn?mrState.tn:'';
+  g('mr3-body').innerHTML=es_tn?`
+    <div class="fr">
+      <div class="fg"><label class="fl">Toneladas descargadas *</label><input type="number" class="fi" id="mr-tns" value="${base_tn}" placeholder="ej: 28.5" step="0.1" oninput="mrCalcBase()"></div>
+      <div class="fg"><label class="fl">Tarifa por tonelada ($) *</label><input type="number" class="fi" id="mr-tptn" placeholder="ej: 65000" oninput="mrCalcBase()"></div>
+    </div>
+    <div class="dr"><span class="dr-l">Total base sin IVA</span><span class="dr-v" style="color:var(--accent)" id="mr3-base-disp">$0</span></div>
+  `:`
+    <div class="fg"><label class="fl">Monto del flete sin IVA *</label><input type="number" class="fi" id="mr-fijo" placeholder="ej: 1800000" oninput="mrCalcBase()"></div>
+    <div class="fg"><label class="fl">Toneladas (para calcular combustible)</label><input type="number" class="fi" id="mr-fijo-tn" value="${base_tn}" placeholder="ej: 28" step="0.1"></div>
+  `;
+  g('mr3-iva-info').textContent=es_tn?'El % del chofer se calcula sobre Tn × tarifa/Tn (sin IVA).':'El % del chofer se calcula sobre el monto ingresado (sin IVA). Igualmente ingresá las toneladas para calcular el combustible.';
+}
+
+window.mrCalcBase=()=>{
+  let base=0;
+  if(mrState.tipoTarifa==='tn'){
+    const tn=parseFloat(document.getElementById('mr-tns')?.value)||0;
+    const tptn=parseFloat(document.getElementById('mr-tptn')?.value)||0;
+    base=tn*tptn;
+    const el=document.getElementById('mr3-base-disp');
+    if(el)el.textContent='$'+Math.round(base).toLocaleString('es-AR');
+  }else{
+    base=parseFloat(document.getElementById('mr-fijo')?.value)||0;
+  }
+  mrState.tarifaBase=base;
+};
+
+window.mrNext=n=>{
+  if(n===3){
+    mrCalcBase();
+    if(mrState.tipoTarifa==='tn'){
+      mrState.tn=parseFloat(document.getElementById('mr-tns')?.value)||0;
+      mrState.tarifaTN=parseFloat(document.getElementById('mr-tptn')?.value)||0;
+      if(!mrState.tn||!mrState.tarifaTN){g('mr3-err').textContent='Ingresá toneladas y tarifa';return;}
+    }else{
+      mrState.tarifaFija=parseFloat(document.getElementById('mr-fijo')?.value)||0;
+      mrState.tn=parseFloat(document.getElementById('mr-fijo-tn')?.value)||0;
+      if(!mrState.tarifaFija){g('mr3-err').textContent='Ingresá el monto del flete';return;}
+    }
+    g('mr3-err').textContent='';
+  }
+  if(n===4){
+    // si maneja yo, saltear paso 4
+    if(mrState.maneja==='yo'){mrState.pctChofer=0;mrState.montoChofer=0;mrGoStep(5);return;}
+  }
+  mrGoStep(n+1);
+};
+
+function renderMR4(){
+  if(mrState.maneja==='yo'){mrGoStep(5);return;}
+  g('mr4-sub').textContent='¿Qué porcentaje cobra el chofer sobre el monto sin IVA?';
+  g('mr-pct').value=mrState.pctChofer||'';
+  mrCalcChofer();
+}
+
+window.mrCalcChofer=()=>{
+  const pct=parseFloat(_v('mr-pct'))||0;
+  const monto=Math.round(mrState.tarifaBase*(pct/100));
+  mrState.pctChofer=pct;mrState.montoChofer=monto;
+  g('mr-monto-ch').textContent='$'+monto.toLocaleString('es-AR');
+  g('mr-base-info').textContent='Sobre una base de $'+Math.round(mrState.tarifaBase).toLocaleString('es-AR')+' sin IVA';
+};
+
+function renderMR5(){
+  if(mrState.fromMC&&mrState.combustible){
+    g('mr-comb').value=mrState.combustible;
+  }
+  mrActCostos();
+  renderSelectVehiculos();
+}
+
+window.mrActCostos=()=>{
+  const c=parseFloat(_v('mr-comb'))||0,p=parseFloat(_v('mr-peaj'))||0,
+        vi=parseFloat(_v('mr-viat'))||0,o=parseFloat(_v('mr-otro'))||0;
+  mrState.combustible=c;mrState.peajes=p;mrState.viaticos=vi;mrState.otros=o;
+  const total=c+p+vi+o;
+  g('mr-total-cv').textContent='$'+Math.round(total).toLocaleString('es-AR');
+};
+
+window.toggleCF=()=>{
+  const on=document.getElementById('mr-cf-tog').checked;
+  g('mr-cf-wrap').style.display=on?'block':'none';
+};
+
+window.mrCalcCF=()=>{
+  const vid=_v('mr-cf-v'),km=parseFloat(_v('mr-cf-km'))||0;
+  const v=D.vehiculos.find(x=>x.id===vid);
+  if(!v||!v.cfKmMes||!km){g('mr-cf-val').textContent='$0';mrState.cfViaje=0;return;}
+  const cfTotal=(v.cfSeg||0)+(v.cfSue||0)+(v.cfUSD?(v.cfUSD*1500/12):0)+(v.cfCub&&v.cfCubKm?(v.cfCub*18/v.cfCubKm*km):0);
+  const cfKm=cfTotal/v.cfKmMes;
+  const cfViaje=Math.round(cfKm*km);
+  mrState.cfViaje=cfViaje;
+  g('mr-cf-val').textContent='$'+cfViaje.toLocaleString('es-AR');
+};
+
+window.mrCalcular=()=>{
+  mrActCostos();
+  const cf=document.getElementById('mr-cf-tog').checked?mrState.cfViaje:0;
+  const costoTotal=mrState.montoChofer+mrState.combustible+mrState.peajes+mrState.viaticos+mrState.otros+cf;
+  const ganancia=mrState.tarifaBase-costoTotal;
+  const margenPct=mrState.tarifaBase>0?(ganancia/mrState.tarifaBase)*100:0;
+  mrState.costoTotal=costoTotal;mrState.ganancia=ganancia;mrState.margenPct=margenPct;mrState.cfReal=cf;
+  // Margen objetivo
+  const mgObj=mrState.maneja==='yo'?(D.config.margenYo||15):(D.config.margenChofer||25);
+  const llega=margenPct>=mgObj;
+  const muy=margenPct>=(mgObj*1.3);
+  const msg=muy?`¡Excelente! Superás ampliamente el objetivo (${mgObj}%)`:
+             llega?`Llegás al objetivo de ${mgObj}%`:
+             `No llega al objetivo de ${mgObj}%`;
+  // Render resultado
+  g('mr-res-box').innerHTML=`
+    <div class="rent-res ${llega?'verde':'gris'}">
+      <div class="rent-pct">${margenPct.toFixed(1)}%</div>
+      <div style="font-size:11px;opacity:.7;margin-top:4px;letter-spacing:1px;text-transform:uppercase">${mrState.maneja==='yo'?'Yo manejo':'Con chofer'} · Obj. ${mgObj}%</div>
+      <div class="rent-msg">${msg}</div>
+    </div>`;
+  // Detalle
+  const fp=n=>'$'+Math.round(n).toLocaleString('es-AR');
+  const rows=[
+    ['Tarifa base sin IVA',fp(mrState.tarifaBase)],
+    mrState.pctChofer?['% Chofer ('+mrState.pctChofer+'%)',fp(mrState.montoChofer)]:null,
+    mrState.combustible?['Combustible',fp(mrState.combustible)]:null,
+    mrState.peajes?['Peajes',fp(mrState.peajes)]:null,
+    mrState.viaticos?['Viáticos',fp(mrState.viaticos)]:null,
+    mrState.otros?['Otros',fp(mrState.otros)]:null,
+    cf?['Costos fijos prorrateados',fp(cf)]:null,
+    ['Total costos','<strong>'+fp(costoTotal)+'</strong>'],
+    ['Ganancia neta',`<strong style="color:${ganancia>=0?'var(--green)':'var(--red)'}">${fp(ganancia)}</strong>`],
+  ].filter(Boolean);
+  g('mr-det').innerHTML=rows.map(([l,v])=>`<div class="dr"><span class="dr-l">${l}</span><span class="dr-v">${v}</span></div>`).join('');
+  g('mr-guard-ok').style.display='none';
+  mrGoStep(6);
+};
+
+window.guardarRent=async()=>{
+  await fAdd('histRent',{fecha:new Date().toISOString(),
+    maneja:mrState.maneja,tipoTarifa:mrState.tipoTarifa,tn:mrState.tn,
+    tarifaBase:mrState.tarifaBase,pctChofer:mrState.pctChofer,montoChofer:mrState.montoChofer,
+    combustible:mrState.combustible,peajes:mrState.peajes,viaticos:mrState.viaticos,otros:mrState.otros,
+    cfViaje:mrState.cfReal||0,costoTotal:mrState.costoTotal,ganancia:mrState.ganancia,
+    margenPct:mrState.margenPct,orig:mrState.orig||'',dest:mrState.dest||'',
+    vehiculoId:mcState.vid||null,patente:D.vehiculos.find(x=>x.id===mcState.vid)?.patente||'',
+    chofer:driverData?.nombre||null
+  });
+  await loadData();renderHistRent();
+  g('mr-guard-ok').style.display='block';
+  showToast('Guardado en historial','ok');
+};
+
+// ===== HISTORIAL =====
+window.switchHTab=(tab,btn)=>{
+  hTab=tab;
+  g('h-viajes').style.display=tab==='v'?'block':'none';
+  g('h-rent').style.display=tab==='r'?'block':'none';
+  document.querySelectorAll('#screen-hist .l-tab').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+};
+
+window.setHFilter=(f,btn)=>{
+  hFilter=f;
+  document.querySelectorAll('#screen-hist .btn').forEach(b=>{b.className='btn btn-g';});
+  btn.className='btn btn-p';
+  renderHistViajes();renderHistRent();
+};
+
+function filtrarPorFecha(items){
+  if(hFilter==='todo')return items;
+  const ahora=new Date();
+  const ini=new Date(ahora.getFullYear(),ahora.getMonth(),1);
+  return items.filter(x=>{
+    if(!x.fecha)return false;
+    return new Date(x.fecha)>=ini;
+  });
+}
+
+function renderHistViajes(){
+  const el=g('hv-list');if(!el)return;
+  const items=filtrarPorFecha(D.histViajes);
+  if(!items.length){el.innerHTML='<div class="empty"><div class="empty-icon">🗺️</div>Sin viajes guardados</div>';return;}
+  el.innerHTML=items.map(r=>{
+    const f=r.fecha?new Date(r.fecha).toLocaleDateString('es-AR'):'—';
+    const ruta=[r.origen,r.destino].filter(Boolean).join(' → ')||'—';
+    return`<div class="hi">
+      <div class="hi-ruta">${ruta}</div>
+      <div class="hi-meta">${f} · ${r.patente||'—'} · ${r.km||'?'} km</div>
+      <div class="hi-res hi-ok">${r.litros} L cargados${r.costo?` · $${Math.round(r.costo).toLocaleString('es-AR')}`:''}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderHistRent(){
+  const el=g('hr-list');if(!el)return;
+  const items=filtrarPorFecha(D.histRent);
+  if(!items.length){el.innerHTML='<div class="empty"><div class="empty-icon">📊</div>Sin cálculos guardados</div>';g('h-rent-sum').innerHTML='';return;}
+  // Resumen
+  const total=items.length;
+  const mgObj_ch=D.config.margenChofer||25;
+  const mgObj_yo=D.config.margenYo||15;
+  const llegaron=items.filter(r=>{
+    const obj=r.maneja==='yo'?mgObj_yo:mgObj_ch;
+    return r.margenPct>=obj;
+  }).length;
+  const promedio=items.reduce((a,r)=>a+(r.margenPct||0),0)/total;
+  // Por camión
+  const porCamion={};
+  items.forEach(r=>{if(r.patente){if(!porCamion[r.patente])porCamion[r.patente]={n:0,sum:0};porCamion[r.patente].n++;porCamion[r.patente].sum+=r.margenPct||0;}});
+  g('h-rent-sum').innerHTML=`
+    <div class="sum-box">
+      <div class="sum-row"><span class="sum-l">Total de viajes</span><span class="sum-v">${total}</span></div>
+      <div class="sum-row"><span class="sum-l">Llegaron al objetivo</span><span class="sum-v ok">${llegaron} / ${total}</span></div>
+      <div class="sum-row"><span class="sum-l">Margen promedio</span><span class="sum-v ${promedio>=(mgObj_ch+mgObj_yo)/2?'ok':''}">${promedio.toFixed(1)}%</span></div>
+      ${Object.entries(porCamion).map(([p,d])=>`<div class="sum-row"><span class="sum-l">${p}</span><span class="sum-v">${(d.sum/d.n).toFixed(1)}% prom.</span></div>`).join('')}
+    </div>`;
+  el.innerHTML=items.map(r=>{
+    const f=r.fecha?new Date(r.fecha).toLocaleDateString('es-AR'):'—';
+    const ruta=[r.orig,r.dest].filter(Boolean).join(' → ')||'—';
+    const obj=r.maneja==='yo'?mgObj_yo:mgObj_ch;
+    const ok=r.margenPct>=obj;
+    return`<div class="hi">
+      <div class="hi-ruta">${ruta}</div>
+      <div class="hi-meta">${f} · ${r.patente||'—'} · ${r.maneja==='yo'?'Yo manejé':'Chofer'}</div>
+      <div class="hi-res ${ok?'hi-ok':'hi-no'}">${r.margenPct?.toFixed(1)||0}% margen · Ganancia: $${Math.round(r.ganancia||0).toLocaleString('es-AR')}</div>
+    </div>`;
+  }).join('');
+}
+
+// ===== NAVEGACIÓN =====
+window.goScreen=(screen,btn)=>{
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));
+  g('screen-'+screen)?.classList.add('active');
+  g('bn-'+screen)?.classList.add('on');
+  closeUM();
+  if(screen==='hist'){renderHistViajes();renderHistRent();}
+  if(screen==='cfg'){renderCfgChoferes();renderCfgVehiculos();}
+};
+window.goHome=()=>{showPage('PA');goScreen('home');};
+
+// ===== UTILS =====
+window.showPage=id=>{document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));g(id).classList.add('active');};
+function hideLoad(){const ls=g('LS');if(ls&&ls.style.display!=='none'){ls.style.opacity='0';setTimeout(()=>ls.style.display='none',400);}}
+window.showPanel=(id,btn)=>{
+  ['pLogin','pReg','pForgot','pVerify','pChofer'].forEach(p=>{const el=g(p);if(el)el.style.display='none';});
+  g(id).style.display='block';
+  if(btn){document.querySelectorAll('.l-tab').forEach(b=>b.classList.remove('on'));btn.classList.add('on');}
+  ['li-err','re-err','fo-err','v-err','p-err'].forEach(e=>{const el=g(e);if(el)el.textContent='';});
+};
+window.showToast=(msg,type='')=>{const t=g('toast');t.textContent=msg;t.className='toast show '+type;setTimeout(()=>t.className='toast',3500);};
+window.toggleUM=()=>{g('uMenu').classList.toggle('open');g('OV').classList.toggle('show');};
+window.closeUM=()=>{g('uMenu')?.classList.remove('open');g('OV')?.classList.remove('show');};
+window.togglePass=(id,btn)=>{const el=g(id);if(el.type==='password'){el.type='text';btn.style.color='var(--accent)';}else{el.type='password';btn.style.color='var(--text3)';}};
+window.checkPassUI=()=>{
+  const p=_v('re-pass');
+  const s=(id,ok)=>{const el=g(id);if(!el)return;el.className='pr'+(ok?' ok':'');el.textContent=(ok?'✓':'○')+el.textContent.slice(1);};
+  s('r-len',p.length>=6);s('r-up',/[A-Z]/.test(p));s('r-num',/[0-9!@#$%^&*()_+\-=\[\]{};:'",.<>?]/.test(p));
+};
+function validPass(p){
+  if(p.length<6)return'Mínimo 6 caracteres';
+  if(!/[A-Z]/.test(p))return'Necesita una mayúscula';
+  if(!/[0-9!@#$%^&*()]/.test(p))return'Necesita un número o símbolo';
+  return null;
+}
+window.pinM=i=>{const el=g('p'+i);if(el.value&&i<3)g('p'+(i+1)).focus();};
+window.pinK=(e,i)=>{if(e.key==='Backspace'&&!g('p'+i).value&&i>0)g('p'+(i-1)).focus();};
+window.showCFInfo=()=>showToast('Son los gastos que tiene el camión aunque no viaje: seguros, amortización, sueldo fijo.','');
+function g(id){return document.getElementById(id);}
+function _v(id){const el=g(id);return el?el.value:'';}
+
+if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));}
+</script>
+</body>
+</html>
